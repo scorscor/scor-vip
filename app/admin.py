@@ -232,6 +232,24 @@ def add_skill():
     return render_template('admin/skill_form.html', skill=None)
 
 
+@admin_bp.route('/skills/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_skill(id):
+    """编辑技能"""
+    skill = Skill.query.get_or_404(id)
+
+    if request.method == 'POST':
+        skill.name = request.form.get('name')
+        skill.category = request.form.get('category')
+        skill.order = int(request.form.get('order', 0))
+
+        db.session.commit()
+        flash('技能更新成功', 'success')
+        return redirect(url_for('admin.skills'))
+
+    return render_template('admin/skill_form.html', skill=skill)
+
+
 @admin_bp.route('/skills/<int:id>/delete', methods=['POST'])
 @login_required
 def delete_skill(id):

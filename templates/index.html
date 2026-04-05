@@ -125,12 +125,12 @@
         }
     </style>
 </head>
-<body class="bg-surface text-on-surface font-body selection:bg-primary/10 selection:text-primary">
+<body class="bg-surface text-on-surface font-body selection:bg-slate-900 selection:text-white">
 <!-- Top NavBar -->
 <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-none">
     <div class="flex justify-between items-center px-8 md:px-16 py-6 w-full max-w-screen-2xl mx-auto font-['Manrope'] tracking-tight">
         <div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50">
-            数字策展人
+            新时代的数字人
         </div>
         <div class="hidden md:flex items-center space-x-12">
             <a class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-1 transition-colors" data-nav-link data-section="about" href="#about">关于</a>
@@ -147,16 +147,16 @@
     <!-- Hero Section -->
     <section class="min-h-[870px] flex flex-col justify-center px-8 md:px-16 max-w-screen-2xl mx-auto py-24">
         <div class="max-w-4xl">
-            <span class="inline-block text-primary font-label text-sm uppercase tracking-[0.2em] mb-8 animate-fade-in">坐标英国伦敦</span>
+            <span class="inline-block text-primary font-label text-sm uppercase tracking-[0.2em] mb-8 animate-fade-in">坐标中国扬州</span>
             <h1 class="font-headline text-5xl md:text-8xl font-extrabold tracking-tight text-on-surface leading-[1.05] mb-10">
-                我是 <span class="text-primary italic" id="hero-name">Adrian Vance</span>，一位创造数字架构的创意设计师
+                我是 <span class="text-primary italic" id="hero-name">Scor</span>，一位创造数字价值的架构设计师
             </h1>
             <p class="font-body text-xl md:text-2xl text-on-surface-variant max-w-2xl leading-relaxed mb-12">
-                融合几何精度与编排韵律，打造如实体画廊般的高端数字体验
+                AI时代每一个想法都能快速变为价值，让我来帮助你实现梦想
             </p>
             <div class="flex items-center gap-8">
                 <button onclick="document.getElementById('works').scrollIntoView({behavior: 'smooth'})" class="bg-primary text-on-primary px-8 py-4 rounded-md font-semibold flex items-center gap-3 hover:opacity-90 transition-all group">
-                    查看作品集
+                    查看我的个人作品
                     <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
             </div>
@@ -186,7 +186,8 @@
             <div class="lg:col-span-5">
                 <h2 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight mb-8">设计理念与方法</h2>
                 <p class="font-body text-lg text-on-surface-variant leading-relaxed mb-12">
-                    设计不是装饰层，而是结构基础。我的工作流程包括深入研究和专注打磨，确保每个像素都兼具功能性和美学价值。
+                    设计并非表层装饰，而是系统架构的基础。我的工作方式以深度研究与精细化打磨为核心，确保每一处细节在实现功能逻辑的同时，兼具严谨的结构美感与体验价值。
+
                 </p>
                 <div class="space-y-4">
                     <div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low">
@@ -212,14 +213,14 @@
                 </div>
                 <div class="bg-surface-container-highest p-8 rounded-xl aspect-square flex items-center justify-center text-center">
                     <div>
-                        <span class="text-4xl font-bold font-headline block">08+</span>
-                        <span class="text-xs uppercase tracking-tighter text-on-surface-variant">年经验</span>
+                        <span class="text-4xl font-bold font-headline block">10+</span>
+                        <span class="text-xs uppercase tracking-tighter text-on-surface-variant">年前后端经验</span>
                     </div>
                 </div>
                 <div class="bg-surface-container-highest p-8 rounded-xl aspect-square flex items-center justify-center text-center">
                     <div>
-                        <span class="text-4xl font-bold font-headline block">50+</span>
-                        <span class="text-xs uppercase tracking-tighter text-on-surface-variant">完成项目</span>
+                        <span class="text-4xl font-bold font-headline block">30+</span>
+                        <span class="text-xs uppercase tracking-tighter text-on-surface-variant">中型项目</span>
                     </div>
                 </div>
             </div>
@@ -266,7 +267,7 @@
 <footer class="w-full border-t border-slate-200/20 dark:border-slate-800/20 bg-slate-50 dark:bg-slate-950">
     <div class="flex flex-col md:flex-row justify-between items-center px-8 md:px-16 py-12 w-full max-w-screen-2xl mx-auto font-['Inter'] text-sm tracking-wide uppercase">
         <div class="text-slate-500 dark:text-slate-400 mb-8 md:mb-0">
-            © 2024 数字策展人。匠心打造。
+            © 2026 一人AI团队 匠心打造。
         </div>
         <div class="flex flex-wrap justify-center gap-8 md:gap-12">
             <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#">领英</a>
@@ -348,7 +349,7 @@
                 return `
                     <div class="${wrapperClass}" ${wrapperAttrs}>
                         <div class="aspect-[4/5] overflow-hidden bg-surface-container-highest mb-8 relative">
-                            <img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                            <img class="w-full h-full object-cover transition-all duration-700 scale-105 group-hover:scale-100"
                                  src="${project.image_url}"
                                  alt="${project.title}"/>
                             <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-500"></div>
