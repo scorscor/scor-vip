@@ -3,43 +3,66 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 import os
 
-# 从 models 导入 db 实例，确保全局唯一
 from app.models import db, Message, Project, Skill, Admin
 
 migrate = Migrate()
 
 
-def create_app():
-    app = Flask(__name__,
-                template_folder='../templates',
-                static_folder='../static')
+def _build_default_sqlite_uri(instance_dir):
+    db_path = os.path.join(instance_dir, 'portfolio.db')
+    return f"sqlite:///{db_path}"
 
-    # 项目根目录
+
+def _normalize_database_uri(database_url, root_dir, instance_dir):
+    database_url = (database_url or '').strip()
+    if not database_url:
+        return _build_default_sqlite_uri(instance_dir)
+
+    if database_url.startswith('postgres://'):
+        return database_url.replace('postgres://', 'postgresql://', 1)
+
+    if database_url.startswith('mysql://'):
+        return database_url.replace('mysql://', 'mysql+pymysql://', 1)
+
+    if not database_url.startswith('sqlite:///') or database_url.startswith('sqlite:////'):
+        return database_url
+
+    sqlite_path = database_url.replace('sqlite:///', '', 1)
+    if os.path.isabs(sqlite_path):
+        return database_url
+
+    return f"sqlite:///{os.path.join(root_dir, sqlite_path)}"
+
+
+def create_app():
+    app = Flask(
+        __name__,
+        template_folder='../templates',
+        static_folder='../static'
+    )
+
     root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
     instance_dir = os.path.join(root_dir, 'instance')
     os.makedirs(instance_dir, exist_ok=True)
 
-    # 数据库路径 - 使用绝对路径
-    db_path = os.path.join(instance_dir, 'portfolio.db')
-
-    # 配置
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
-
-    # 始终使用绝对路径作为数据库 URI
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-
+    app.config['SQLALCHEMY_DATABASE_URI'] = _normalize_database_uri(
+        os.environ.get('DATABASE_URL'),
+        root_dir,
+        instance_dir
+    )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+    }
 
-    # 初始化扩展
     db.init_app(app)
     migrate.init_app(app, db)
     CORS(app)
 
-    # 注册路由
     from app.routes import main
     app.register_blueprint(main)
 
-    # 注册后台管理蓝图
     from app.admin import admin_bp, init_login_manager
     app.register_blueprint(admin_bp)
     init_login_manager(app)
