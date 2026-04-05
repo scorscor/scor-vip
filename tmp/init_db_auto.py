@@ -1,6 +1,10 @@
 """
 自动初始化数据库脚本（无需用户输入）
 """
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app import create_app
 from app.models import db, Message, Project, Skill, Admin
 from werkzeug.security import generate_password_hash
