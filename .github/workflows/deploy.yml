@@ -35,5 +35,5 @@ jobs:
           docker image prune -f
           
           # 查看日志确认启动成功
-          docker-compose logs -d
+          docker-compose logs
           
