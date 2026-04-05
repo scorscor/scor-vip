@@ -11,6 +11,13 @@ def init_database():
     app = create_app()
 
     with app.app_context():
+        # 删除旧数据库文件（如果存在）
+        import os
+        db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
+        if os.path.exists(db_path):
+            print(f"[INFO] 删除旧数据库文件：{db_path}")
+            os.remove(db_path)
+        
         # 创建所有表
         print("[INFO] 正在创建数据库表...")
         db.create_all()
