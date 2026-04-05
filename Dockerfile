@@ -26,4 +26,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5003/')" || exit 1
 
 # 启动命令
-CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:5003", "--workers", "2", "--threads", "4", "app:create_app()"]
+CMD ["sh", "-c", "python bootstrap_db.py && python -m gunicorn --bind 0.0.0.0:5003 --workers 2 --threads 4 'app:create_app()'"]
