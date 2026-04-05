@@ -1,59 +1,38 @@
-name: Deploy to ziliao.scor.vip
+name: Deploy to Server
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
-
-concurrency:
-  group: deploy-ziliao-scor-vip
-  cancel-in-progress: true
+    branches: [ main, master ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-      DEPLOY_BRANCH: main
-      REPO_URL: https://github.com/scorscor/scor-vip.git
+    
     steps:
-      - name: Prepare SSH
-        shell: bash
-        env:
-          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-        run: |
-          set -e
-          mkdir -p ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p "${DEPLOY_PORT:-22}" -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Deploy on server
-        shell: bash
-        run: |
-          set -e
-          ssh -p "${DEPLOY_PORT:-22}" "${DEPLOY_USER}@${DEPLOY_HOST}" \
-            "DEPLOY_PATH='${DEPLOY_PATH}' DEPLOY_BRANCH='${DEPLOY_BRANCH}' REPO_URL='${REPO_URL}' bash -s" <<'EOF'
-          set -e
-
-          if [ ! -d "$DEPLOY_PATH/.git" ]; then
-            echo "Cloning repository..."
-            git clone "$REPO_URL" "$DEPLOY_PATH"
-            cd "$DEPLOY_PATH"
-          else
-            echo "Updating existing repository..."
-            cd "$DEPLOY_PATH"
-            # Ensure remote URL is correct
-            git remote set-url origin "$REPO_URL" 2>/dev/null || git remote add origin "$REPO_URL"
-          fi
-
-          git fetch origin "$DEPLOY_BRANCH"
-          git checkout "$DEPLOY_BRANCH"
-          git pull --ff-only origin "$DEPLOY_BRANCH"
-          docker compose -f docker-compose.prod.yml up -d --build
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SERVER_PORT }}
+        script: |
+          cd ${{ secrets.PROJECT_PATH }}
+          
+          # 拉取最新代码
+          git pull origin main
+          
+          # 停止现有容器
+          docker-compose down
+          
+          # 重新构建并启动
+          docker-compose up -d --build
+          
+          # 清理旧镜像
           docker image prune -f
-          EOF
+          
+          # 查看日志确认启动成功
+          docker-compose logs -d
