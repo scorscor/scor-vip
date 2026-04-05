@@ -1,0 +1,449 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}{{ '编辑' if project else '添加' }}项目{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<style>
+.cropper-container {
+    height: 500px;
+    background: #1a1a1a;
+}
+.cropper-view-box,
+.cropper-view-box outline {
+    border-radius: 0;
+}
+.cropper-view-box outline {
+    outline-color: rgba(59, 130, 246, 0.8);
+    outline-width: 2px;
+}
+.cropper-dashed.dashed-h,
+.cropper-dashed.dashed-v {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+.cropper-face {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+#crop-canvas {
+    max-width: 100%;
+}
+</style>
+{% endblock %}
+
+{% set unread_count = 0 %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{{ url_for('admin.projects') }}" class="text-blue-600 hover:text-blue-800 text-sm mb-2 inline-block">
+        &larr; 返回列表
+    </a>
+    <h2 class="text-3xl font-bold text-gray-800">{{ '编辑' if project else '添加' }}项目</h2>
+</div>
+
+<div class="bg-white rounded-lg shadow p-8 max-w-4xl">
+    <form method="POST" class="space-y-6" enctype="multipart/form-data">
+        <!-- 图片上传区域 -->
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50 hover:bg-gray-100 transition-colors" id="upload-area">
+            <input type="file" id="image-upload" accept="image/*" class="hidden">
+            <span class="material-icons text-gray-400 text-5xl mb-2">add_photo_alternate</span>
+            <p class="text-gray-600 mb-2">点击或拖拽上传图片</p>
+            <p class="text-sm text-gray-500">支持格式：JPG, PNG, WebP | 最大 5MB</p>
+            <div id="upload-error" class="text-red-500 text-sm mt-2 hidden"></div>
+        </div>
+
+        <!-- 图片裁剪编辑器 -->
+        <div id="cropper-container" class="hidden">
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-semibold text-gray-800">裁剪图片</h3>
+                    <div class="flex gap-2">
+                        <button type="button" id="rotate-left" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300" title="向左旋转">
+                            <span class="material-icons text-sm">rotate_left</span>
+                        </button>
+                        <button type="button" id="rotate-right" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300" title="向右旋转">
+                            <span class="material-icons text-sm">rotate_right</span>
+                        </button>
+                        <button type="button" id="flip-horizontal" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300" title="水平翻转">
+                            <span class="material-icons text-sm">flip</span>
+                        </button>
+                        <button type="button" id="flip-vertical" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300" title="垂直翻转">
+                            <span class="material-icons text-sm">flip_to_back</span>
+                        </button>
+                        <button type="button" id="reset-crop" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            重置
+                        </button>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600">
+                    <span class="material-icons text-xs align-middle">info</span>
+                    拖动图片调整位置，滚动鼠标滚轮或拖动裁剪框角落缩放（保持 4:5 比例）
+                </p>
+            </div>
+            <div class="cropper-wrapper border rounded-lg overflow-hidden">
+                <img id="image-to-crop" src="" alt="裁剪">
+            </div>
+            <div class="mt-4 flex gap-4">
+                <button type="button" id="confirm-crop" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                    <span class="material-icons text-sm align-middle mr-1">check</span>
+                    确认裁剪
+                </button>
+                <button type="button" id="cancel-crop" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                    取消
+                </button>
+            </div>
+        </div>
+
+        <!-- 裁剪后预览 -->
+        <div id="preview-container" class="hidden">
+            <div class="relative">
+                <img id="image-preview" src="" alt="预览" class="w-48 h-60 object-cover rounded-lg shadow">
+                <button type="button" onclick="reCrop()" class="absolute top-2 left-2 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600" title="重新裁剪">
+                    <span class="material-icons text-sm">crop</span>
+                </button>
+                <button type="button" onclick="removeImage()" class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
+                    <span class="material-icons text-sm">close</span>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">* 最终输出：4:5 比例 (800x1000px)</p>
+        </div>
+
+        <!-- 隐藏的图片 URL 输入 -->
+        <input type="hidden" name="image_url" id="image-url" value="{{ project.image_url if project else '' }}">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">项目名称 *</label>
+            <input type="text" name="title" value="{{ project.title if project else '' }}" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="输入项目名称">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">分类 *</label>
+            <input type="text" name="category" value="{{ project.category if project else '' }}" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="例如：UI/UX 设计">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">描述</label>
+            <textarea name="description" rows="3"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="项目描述">{{ project.description if project else '' }}</textarea>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">跳转 URL</label>
+            <input type="text" name="project_url" value="{{ project.project_url if project else '' }}"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://example.com（可选）">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">排序</label>
+                <input type="number" name="order" value="{{ project.order if project else 0 }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <div class="flex items-end">
+                <label class="flex items-center">
+                    <input type="checkbox" name="is_offset" {% if project and project.is_offset %}checked{% endif %}
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="ml-2 text-sm text-gray-700">错位显示</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex gap-4 pt-4">
+            <button type="submit"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                {{ '保存' if project else '添加' }}
+            </button>
+            <a href="{{ url_for('admin.projects') }}"
+                class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                取消
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- 图片加载遮罩 -->
+<div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p class="text-gray-600" id="loading-text">正在处理图片...</p>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+// 配置
+const CROP_CONFIG = {
+    aspectRatio: 4 / 5,  // 固定 4:5 比例
+    viewMode: 1,  // 限制裁剪框不能超出图片
+    autoCropArea: 0.8,
+    dragMode: 'move',  // 默认拖动模式
+    guides: true,
+    center: true,
+    highlight: false,
+    background: false,
+};
+
+// 变量
+let cropper = null;
+let originalFile = null;
+
+const uploadArea = document.getElementById('upload-area');
+const imageInput = document.getElementById('image-upload');
+const cropperContainer = document.getElementById('cropper-container');
+const previewContainer = document.getElementById('preview-container');
+const imageToCrop = document.getElementById('image-to-crop');
+const imagePreview = document.getElementById('image-preview');
+const imageUrlInput = document.getElementById('image-url');
+const uploadError = document.getElementById('upload-error');
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingText = document.getElementById('loading-text');
+
+// 初始化时检查是否有图片
+window.addEventListener('DOMContentLoaded', () => {
+    if (imageUrlInput.value) {
+        showPreview(imageUrlInput.value);
+    }
+});
+
+// 点击上传区域
+uploadArea.addEventListener('click', () => {
+    imageInput.click();
+});
+
+// 文件选择
+imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        selectImage(file);
+    }
+});
+
+// 拖拽上传
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('border-blue-500');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('border-blue-500');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('border-blue-500');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+        selectImage(file);
+    } else {
+        showError('请选择图片文件');
+    }
+});
+
+// 选择图片（显示裁剪器）
+function selectImage(file) {
+    // 检查文件大小
+    if (file.size > 5 * 1024 * 1024) {
+        showError('图片大小超过 5MB 限制');
+        return;
+    }
+
+    // 检查图片类型
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+        showError('不支持的图片格式，仅支持 JPG, PNG, WebP');
+        return;
+    }
+
+    originalFile = file;
+    uploadError.classList.add('hidden');
+    uploadArea.classList.add('hidden');
+
+    // 读取图片并显示裁剪器
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        imageToCrop.src = e.target.result;
+        cropperContainer.classList.remove('hidden');
+        initCropper();
+    };
+    reader.readAsDataURL(file);
+}
+
+// 初始化裁剪器
+function initCropper() {
+    if (cropper) {
+        cropper.destroy();
+    }
+
+    cropper = new Cropper(imageToCrop, {
+        ...CROP_CONFIG,
+        ready() {
+            console.log('Cropper 已就绪');
+        },
+    });
+}
+
+// 旋转和翻转按钮
+document.getElementById('rotate-left').addEventListener('click', () => {
+    if (cropper) cropper.rotate(-90);
+});
+
+document.getElementById('rotate-right').addEventListener('click', () => {
+    if (cropper) cropper.rotate(90);
+});
+
+document.getElementById('flip-horizontal').addEventListener('click', () => {
+    if (cropper) {
+        const imageData = cropper.getImageData();
+        cropper.scaleX(-imageData.scaleX || 1);
+    }
+});
+
+document.getElementById('flip-vertical').addEventListener('click', () => {
+    if (cropper) {
+        const imageData = cropper.getImageData();
+        cropper.scaleY(-imageData.scaleY || 1);
+    }
+});
+
+document.getElementById('reset-crop').addEventListener('click', () => {
+    if (cropper) {
+        cropper.reset();
+        cropper.clear();
+    }
+});
+
+// 确认裁剪
+document.getElementById('confirm-crop').addEventListener('click', async () => {
+    if (!cropper) return;
+
+    loadingText.textContent = '正在裁剪图片...';
+    loadingOverlay.classList.remove('hidden');
+
+    try {
+        // 获取裁剪后的画布
+        const canvas = cropper.getCroppedCanvas({
+            width: 800,
+            height: 1000,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+
+        // 转换为 Blob
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+
+        // 上传裁剪后的图片
+        const formData = new FormData();
+        formData.append('image', blob, 'cropped.jpg');
+
+        const response = await fetch('/admin/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            imageUrlInput.value = data.url;
+            showPreview(data.url);
+        } else {
+            showError(data.error || '上传失败');
+            cropperContainer.classList.remove('hidden');
+        }
+    } catch (error) {
+        showError('网络错误，请重试');
+        cropperContainer.classList.remove('hidden');
+    } finally {
+        loadingOverlay.classList.add('hidden');
+    }
+});
+
+// 取消裁剪
+document.getElementById('cancel-crop').addEventListener('click', () => {
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+    originalFile = null;
+    cropperContainer.classList.add('hidden');
+    uploadArea.classList.remove('hidden');
+    imageToCrop.src = '';
+});
+
+// 上传图片（直接上传，不裁剪）
+async function uploadImage(file) {
+    loadingText.textContent = '正在上传图片...';
+    loadingOverlay.classList.remove('hidden');
+    uploadError.classList.add('hidden');
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+        const response = await fetch('/admin/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            imageUrlInput.value = data.url;
+            showPreview(data.url);
+        } else {
+            showError(data.error || '上传失败');
+        }
+    } catch (error) {
+        showError('网络错误，请重试');
+    } finally {
+        loadingOverlay.classList.add('hidden');
+    }
+}
+
+// 显示预览
+function showPreview(url) {
+    imagePreview.src = url;
+    previewContainer.classList.remove('hidden');
+    cropperContainer.classList.add('hidden');
+    uploadArea.classList.add('hidden');
+    uploadError.classList.add('hidden');
+}
+
+// 重新裁剪
+function reCrop() {
+    if (!imageUrlInput.value) return;
+
+    previewContainer.classList.add('hidden');
+
+    // 加载当前图片进行重新裁剪
+    imageToCrop.src = imageUrlInput.value;
+    cropperContainer.classList.remove('hidden');
+    initCropper();
+}
+
+// 移除图片
+function removeImage() {
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+    imageUrlInput.value = '';
+    imagePreview.src = '';
+    imageToCrop.src = '';
+    previewContainer.classList.add('hidden');
+    cropperContainer.classList.add('hidden');
+    uploadArea.classList.remove('hidden');
+}
+
+// 显示错误
+function showError(message) {
+    uploadError.textContent = message;
+    uploadError.classList.remove('hidden');
+}
+</script>
+{% endblock %}

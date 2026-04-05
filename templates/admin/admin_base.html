@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}后台管理{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* 文字选中样式 */
+        ::selection {
+            background-color: rgba(59, 130, 246, 0.3);
+            color: inherit;
+        }
+        ::-moz-selection {
+            background-color: rgba(59, 130, 246, 0.3);
+            color: inherit;
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-100">
+    <div class="flex min-h-screen">
+        <!-- 侧边栏 -->
+        <aside class="w-64 bg-gray-800 text-white fixed h-full">
+            <div class="p-6">
+                <h1 class="text-xl font-bold">后台管理</h1>
+                <p class="text-gray-400 text-sm mt-1">数字策展人作品集</p>
+            </div>
+
+            <nav class="mt-6">
+                <a href="{{ url_for('admin.dashboard') }}"
+                    class="flex items-center px-6 py-3 {% if request.endpoint == 'admin.dashboard' %}bg-gray-700{% endif %} hover:bg-gray-700 transition-colors">
+                    <span class="material-icons mr-3">dashboard</span>
+                    仪表板
+                </a>
+                <a href="{{ url_for('admin.messages') }}"
+                    class="flex items-center px-6 py-3 {% if request.endpoint == 'admin.messages' %}bg-gray-700{% endif %} hover:bg-gray-700 transition-colors">
+                    <span class="material-icons mr-3">message</span>
+                    留言管理
+                    {% if unread_count > 0 %}
+                        <span class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('admin.projects') }}"
+                    class="flex items-center px-6 py-3 {% if request.endpoint == 'admin.projects' %}bg-gray-700{% endif %} hover:bg-gray-700 transition-colors">
+                    <span class="material-icons mr-3">folder</span>
+                    项目管理
+                </a>
+                <a href="{{ url_for('admin.skills') }}"
+                    class="flex items-center px-6 py-3 {% if request.endpoint == 'admin.skills' %}bg-gray-700{% endif %} hover:bg-gray-700 transition-colors">
+                    <span class="material-icons mr-3">school</span>
+                    技能管理
+                </a>
+                <a href="{{ url_for('admin.settings') }}"
+                    class="flex items-center px-6 py-3 {% if request.endpoint == 'admin.settings' %}bg-gray-700{% endif %} hover:bg-gray-700 transition-colors">
+                    <span class="material-icons mr-3">settings</span>
+                    设置
+                </a>
+            </nav>
+
+            <div class="absolute bottom-0 w-64 p-6 border-t border-gray-700">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-400 text-sm">{{ session.get('username') }}</span>
+                    <a href="{{ url_for('admin.logout') }}" class="text-gray-400 hover:text-white text-sm">退出</a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="ml-64 flex-1 p-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-6">
+                        {% for category, message in messages %}
+                            <div class="px-4 py-3 rounded {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

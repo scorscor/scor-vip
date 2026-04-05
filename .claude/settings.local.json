@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start:*)",
+      "Bash(chmod:*)",
+      "Bash(pip install:*)",
+      "Bash(dir:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout:*)",
+      "Bash(pip show:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}

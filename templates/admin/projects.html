@@ -1,0 +1,56 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}项目管理{% endblock %}
+
+{% set unread_count = 0 %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h2 class="text-3xl font-bold text-gray-800">项目管理</h2>
+        <p class="text-gray-600 mt-1">共 {{ projects|length }} 个项目</p>
+    </div>
+    <a href="{{ url_for('admin.add_project') }}"
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+        <span class="material-icons mr-2">add</span>
+        添加项目
+    </a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for project in projects %}
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="aspect-w-4 aspect-h-5 bg-gray-200">
+            <img src="{{ project.image_url }}" alt="{{ project.title }}"
+                class="w-full h-48 object-cover"
+                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22 viewBox=%220 0 400 500%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22500%22/%3E%3Ctext fill=%22%23999%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E无图片%3C/text%3E%3C/svg%3E'">
+        </div>
+        <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+                <h3 class="text-lg font-semibold text-gray-800">{{ project.title }}</h3>
+                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded">{{ project.category }}</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-3">{{ project.description[:60] }}{% if project.description|length > 60 %}...{% endif %}</p>
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-400">排序：{{ project.order }}</span>
+                <div class="space-x-2">
+                    <a href="{{ url_for('admin.edit_project', id=project.id) }}"
+                        class="text-blue-600 hover:text-blue-800 text-sm">编辑</a>
+                    <form action="{{ url_for('admin.delete_project', id=project.id) }}" method="POST"
+                        class="inline" onsubmit="return confirm('确定删除这个项目吗？')">
+                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm">删除</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not projects %}
+    <div class="text-center py-12">
+        <span class="material-icons text-gray-300 text-6xl mb-4">folder_open</span>
+        <p class="text-gray-500">暂无项目，点击上方按钮添加</p>
+    </div>
+{% endif %}
+{% endblock %}
