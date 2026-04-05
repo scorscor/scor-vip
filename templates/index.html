@@ -4,6 +4,10 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>The Digital Curator | Portfolio</title>
+    <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon"/>
+    <link href="{{ url_for('static', filename='favicon/favicon-64x64.ico') }}" rel="icon" sizes="64x64" type="image/x-icon"/>
+    <link href="{{ url_for('static', filename='favicon/favicon-128x128.ico') }}" rel="icon" sizes="128x128" type="image/x-icon"/>
+    <link href="{{ url_for('static', filename='favicon/favicon-200x200.ico') }}" rel="icon" sizes="200x200" type="image/x-icon"/>
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <!-- Google Fonts -->
@@ -277,6 +281,13 @@
         </div>
     </div>
 </footer>
+
+<div class="bg-[#333333] py-3 text-center">
+    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer"
+        class="text-sm text-gray-300 hover:text-white transition-colors">
+        苏ICP备2022040643号-1
+    </a>
+</div>
 
 <div id="toast-container"></div>
 

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, current_app, jsonify, request, render_template, send_from_directory
 from app.models import db, Message, Project, Skill, Admin
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
@@ -27,6 +27,11 @@ def admin_required(f):
 def index():
     """渲染主页"""
     return render_template('index.html')
+
+
+@main.route('/favicon.ico')
+def favicon():
+    return send_from_directory(current_app.static_folder, 'favicon.ico')
 
 
 @main.route('/api/messages', methods=['POST'])
