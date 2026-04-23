@@ -1,22 +1,56 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 cd "$SCRIPT_DIR"
 
 ADMIN_USERNAME="${ADMIN_USERNAME:-admin}"
 ADMIN_PASSWORD="${ADMIN_PASSWORD:-iamscor123}"
+VENV_PYTHON="$SCRIPT_DIR/venv/bin/python"
 
-if [ -x "$SCRIPT_DIR/venv/bin/python" ]; then
-  PYTHON_BIN="$SCRIPT_DIR/venv/bin/python"
-elif command -v python3 >/dev/null 2>&1; then
-  PYTHON_BIN="python3"
-elif command -v python >/dev/null 2>&1; then
-  PYTHON_BIN="python"
-else
-  echo "[error] Python is not installed." >&2
-  exit 1
-fi
+choose_python() {
+  if [ -x "$VENV_PYTHON" ]; then
+    PYTHON_BIN="$VENV_PYTHON"
+  elif command -v python3 >/dev/null 2>&1; then
+    PYTHON_BIN=$(command -v python3)
+  elif command -v python >/dev/null 2>&1; then
+    PYTHON_BIN=$(command -v python)
+  else
+    echo "[error] Python is not installed." >&2
+    exit 1
+  fi
+}
+
+python_ready() {
+  "$1" - <<'PY' >/dev/null 2>&1
+import flask
+import flask_cors
+import flask_login
+import flask_migrate
+import flask_sqlalchemy
+import werkzeug
+PY
+}
+
+ensure_dependencies() {
+  if python_ready "$PYTHON_BIN"; then
+    return
+  fi
+
+  echo "[warn] Python dependencies are missing. Preparing local virtualenv..."
+
+  if [ ! -x "$VENV_PYTHON" ]; then
+    echo "[info] Creating virtualenv at $SCRIPT_DIR/venv"
+    "$PYTHON_BIN" -m venv "$SCRIPT_DIR/venv"
+  fi
+
+  PYTHON_BIN="$VENV_PYTHON"
+  echo "[info] Installing requirements..."
+  "$PYTHON_BIN" -m pip install -r "$SCRIPT_DIR/requirements.txt"
+}
+
+choose_python
+ensure_dependencies
 
 echo "[info] Resetting admin password..."
 echo "[info] Target username: $ADMIN_USERNAME"
