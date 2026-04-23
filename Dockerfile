@@ -14,9 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua
 # 复制项目文件
 COPY . .
 
-# 创建实例目录和数据卷
+# 创建实例目录，数据库文件由 docker-compose 挂载
 RUN mkdir -p instance
-VOLUME ["/app/instance"]
 
 # 暴露端口
 EXPOSE 5003
@@ -26,4 +25,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5003/')" || exit 1
 
 # 启动命令
-CMD ["sh", "-c", "python bootstrap_db.py && python -m gunicorn --bind 0.0.0.0:5003 --workers 2 --threads 4 'app:create_app()'"]
+CMD ["sh", "-c", "python -m gunicorn --bind 0.0.0.0:5003 --workers 2 --threads 4 'app:create_app()'"]

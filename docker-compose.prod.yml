@@ -11,7 +11,8 @@ services:
       - FLASK_ENV=${FLASK_ENV:-production}
       - PORT=${PORT:-5003}
     volumes:
-      - ./instance:/app/instance
+      - ${DB_FILE:-./instance/portfolio.db}:/app/instance/portfolio.db
+    command: sh -c "python -m gunicorn --bind 0.0.0.0:5003 --workers 2 --threads 4 'app:create_app()'"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5003/')"]

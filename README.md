@@ -103,7 +103,7 @@ docker build -t scor-vip-portfolio .
 # 运行容器
 docker run -d -p 5003:5003 \
   -e SECRET_KEY=your-secret-key \
-  -v $(pwd)/instance:/app/instance \
+  -v $(pwd)/instance/portfolio.db:/app/instance/portfolio.db \
   --name scor-vip \
   scor-vip-portfolio
 ```
