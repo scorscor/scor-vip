@@ -177,7 +177,7 @@
                 </div>
                 <span class="font-label text-xs uppercase tracking-widest text-on-surface-variant pb-2 border-b border-outline-variant/30 hidden md:block" id="project-count">01 — 04 作品</span>
             </div>
-            <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-32">
+            <div id="projects-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
                 <!-- 项目将通过 JS 动态加载 -->
                 <div class="col-span-full text-center py-12 text-on-surface-variant">加载中...</div>
             </div>
@@ -354,12 +354,12 @@
 
             container.innerHTML = projects.map((project, index) => {
                 const hasUrl = project.project_url && project.project_url.trim() !== '';
-                const wrapperClass = `group cursor-pointer ${project.is_offset ? 'md:mt-40' : ''}`;
+                const wrapperClass = 'group cursor-pointer';
                 const wrapperAttrs = hasUrl ? `onclick="window.open('${project.project_url}', '_blank')"` : '';
                 
                 return `
                     <div class="${wrapperClass}" ${wrapperAttrs}>
-                        <div class="aspect-[4/5] overflow-hidden bg-surface-container-highest mb-8 relative">
+                        <div class="aspect-[4/5] overflow-hidden bg-surface-container-highest mb-5 relative">
                             <img class="w-full h-full object-cover transition-all duration-700 scale-105 group-hover:scale-100"
                                  src="${project.image_url}"
                                  alt="${project.title}"/>
@@ -373,7 +373,7 @@
                         </div>
                         <div class="flex flex-col gap-2">
                             <span class="font-label text-xs uppercase tracking-widest text-primary">${project.category}</span>
-                            <h3 class="font-headline text-3xl font-bold group-hover:text-primary transition-colors">${project.title}</h3>
+                            <h3 class="font-headline text-2xl font-bold group-hover:text-primary transition-colors">${project.title}</h3>
                             <p class="font-body text-on-surface-variant max-w-sm mt-2">${project.description}</p>
                         </div>
                     </div>
