@@ -25,11 +25,9 @@ echo "[info] Target username: $ADMIN_USERNAME"
 
 "$PYTHON_BIN" - "$SCRIPT_DIR" "$ADMIN_USERNAME" "$ADMIN_PASSWORD" <<'PY'
 import datetime
-import hashlib
+import base64
 import os
-import secrets
 import sqlite3
-import string
 import sys
 
 
@@ -61,18 +59,8 @@ def resolve_database_path(root_dir: str) -> str:
     return os.path.join(root_dir, sqlite_path)
 
 
-def generate_password_hash(raw_password: str) -> str:
-    salt_chars = string.ascii_letters + string.digits
-    salt = "".join(secrets.choice(salt_chars) for _ in range(16))
-    digest = hashlib.scrypt(
-        raw_password.encode("utf-8"),
-        salt=salt.encode("utf-8"),
-        n=32768,
-        r=8,
-        p=1,
-        maxmem=64 * 1024 * 1024,
-    ).hex()
-    return f"scrypt:32768:8:1${salt}${digest}"
+def encode_password(raw_password: str) -> str:
+    return base64.b64encode(raw_password.encode("utf-8")).decode("ascii")
 
 
 db_path = resolve_database_path(script_dir)
@@ -91,7 +79,7 @@ try:
         """
     )
 
-    password_hash = generate_password_hash(password)
+    password_hash = encode_password(password)
     existing = conn.execute(
         "SELECT id FROM admins WHERE username = ?",
         (username,),

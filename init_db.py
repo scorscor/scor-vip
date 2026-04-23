@@ -3,7 +3,7 @@
 """
 from app import create_app
 from app.models import db, Message, Project, Skill, Admin
-from werkzeug.security import generate_password_hash
+from app.passwords import encode_password
 import os
 
 
@@ -92,7 +92,7 @@ def init_database():
                 if username and password:
                     admin = Admin(
                         username=username,
-                        password_hash=generate_password_hash(password)
+                        password_hash=encode_password(password)
                     )
                     db.session.add(admin)
                     db.session.commit()

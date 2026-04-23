@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from app.models import db, Message, Project, Skill, Admin
-from werkzeug.security import check_password_hash, generate_password_hash
+from app.passwords import check_password, encode_password
 from app.utils import process_uploaded_image
 import os
 
@@ -46,7 +46,7 @@ def login():
 
         admin = Admin.query.filter_by(username=username).first()
 
-        if admin and check_password_hash(admin.password_hash, password):
+        if admin and check_password(admin.password_hash, password):
             user = AdminUser()
             user.id = admin.id
             user.username = admin.username
@@ -278,7 +278,7 @@ def settings():
             else:
                 admin = Admin.query.filter_by(username=session.get('username')).first()
                 if admin:
-                    admin.password_hash = generate_password_hash(new_password)
+                    admin.password_hash = encode_password(new_password)
                     db.session.commit()
                     flash('密码修改成功', 'success')
 

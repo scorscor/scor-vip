@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app, jsonify, request, render_template, send_from_directory
 from app.models import db, Message, Project, Skill, Admin
-from werkzeug.security import generate_password_hash, check_password_hash
+from app.passwords import check_password, encode_password
 from functools import wraps
 
 main = Blueprint('main', __name__)
@@ -16,7 +16,7 @@ def admin_required(f):
             return jsonify({'error': '需要认证'}), 401
 
         admin = Admin.query.filter_by(username=auth.username).first()
-        if not admin or not check_password_hash(admin.password_hash, auth.password):
+        if not admin or not check_password(admin.password_hash, auth.password):
             return jsonify({'error': '认证失败'}), 401
 
         return f(*args, **kwargs)
@@ -200,7 +200,7 @@ def register_admin():
 
     admin = Admin(
         username=data.get('username'),
-        password_hash=generate_password_hash(data.get('password'))
+        password_hash=encode_password(data.get('password'))
     )
 
     db.session.add(admin)

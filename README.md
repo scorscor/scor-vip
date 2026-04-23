@@ -186,7 +186,7 @@ docker run -d -p 5003:5003 \
 ### Admin (管理员)
 - id: 主键
 - username: 用户名
-- password_hash: 密码哈希
+- password_hash: Base64 编码后的密码
 - created_at: 创建时间
 
 ## 开发说明

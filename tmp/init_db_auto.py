@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app import create_app
 from app.models import db, Message, Project, Skill, Admin
-from werkzeug.security import generate_password_hash
+from app.passwords import encode_password
 import os
 
 
@@ -97,7 +97,7 @@ def init_database():
             print("[INFO] 创建默认管理员账户...")
             admin = Admin(
                 username='admin',
-                password_hash=generate_password_hash('admin123')
+                password_hash=encode_password('admin123')
             )
             db.session.add(admin)
             print("[OK] 管理员账户创建完成（用户名：admin, 密码：admin123）")
