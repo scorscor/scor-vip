@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>网站咨询服务费 - 支付宝支付</title>
+    <title>&#32593;&#31449;&#21672;&#35810;&#26381;&#21153;&#36153; - &#25903;&#20184;</title>
     <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon"/>
     <link href="{{ url_for('static', filename='favicon/favicon-64x64.ico') }}" rel="icon" sizes="64x64" type="image/x-icon"/>
     <link href="{{ url_for('static', filename='favicon/favicon-128x128.ico') }}" rel="icon" sizes="128x128" type="image/x-icon"/>
@@ -19,10 +19,8 @@
                         primary: "#0041c8",
                         surface: "#f9f9fb",
                         "surface-container-low": "#f3f3f5",
-                        "surface-container": "#edeef0",
                         "on-surface": "#1a1c1d",
-                        "on-surface-variant": "#434656",
-                        outline: "#737688"
+                        "on-surface-variant": "#434656"
                     },
                     borderRadius: {
                         DEFAULT: "0.125rem",
@@ -52,7 +50,7 @@
             <a href="/" class="font-headline text-xl font-bold tracking-tight text-slate-900">Scor</a>
             <a href="/" class="flex items-center gap-2 rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-on-surface-variant transition hover:border-primary hover:text-primary">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                返回首页
+                &#36820;&#22238;&#39318;&#39029;
             </a>
         </div>
     </nav>
@@ -61,10 +59,10 @@
         <section class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 md:p-10">
             <div class="mb-8 flex items-start justify-between gap-6 border-b border-slate-200 pb-8">
                 <div>
-                    <p class="mb-3 text-sm font-semibold text-primary">在线支付</p>
-                    <h1 class="font-headline text-3xl font-extrabold tracking-tight md:text-5xl">网站咨询服务费</h1>
+                    <p class="mb-3 text-sm font-semibold text-primary">&#22312;&#32447;&#25903;&#20184;</p>
+                    <h1 class="font-headline text-3xl font-extrabold tracking-tight md:text-5xl">&#32593;&#31449;&#21672;&#35810;&#26381;&#21153;&#36153;</h1>
                     <p class="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
-                        本页面用于用户购买网站咨询服务，服务内容包含需求沟通、网站方案建议、页面结构建议与基础上线咨询。
+                        &#26412;&#39029;&#38754;&#29992;&#20110;&#29992;&#25143;&#36141;&#20080;&#32593;&#31449;&#21672;&#35810;&#26381;&#21153;&#65292;&#26381;&#21153;&#20869;&#23481;&#21253;&#21547;&#38656;&#27714;&#27807;&#36890;&#12289;&#32593;&#31449;&#26041;&#26696;&#24314;&#35758;&#12289;&#39029;&#38754;&#32467;&#26500;&#24314;&#35758;&#19982;&#22522;&#30784;&#19978;&#32447;&#21672;&#35810;&#12290;
                     </p>
                 </div>
                 <div class="hidden rounded-lg bg-surface-container-low p-4 text-primary md:block">
@@ -74,87 +72,132 @@
 
             <div class="grid gap-4 sm:grid-cols-3">
                 <div class="rounded-lg bg-surface-container-low p-5">
-                    <p class="text-sm text-on-surface-variant">商品名称</p>
-                    <p class="mt-3 font-semibold">网站咨询服务费</p>
+                    <p class="text-sm text-on-surface-variant">&#21830;&#21697;&#21517;&#31216;</p>
+                    <p class="mt-3 font-semibold">&#32593;&#31449;&#21672;&#35810;&#26381;&#21153;&#36153;</p>
                 </div>
                 <div class="rounded-lg bg-surface-container-low p-5">
-                    <p class="text-sm text-on-surface-variant">服务数量</p>
-                    <p class="mt-3 font-semibold">1 次</p>
+                    <p class="text-sm text-on-surface-variant">&#26381;&#21153;&#25968;&#37327;</p>
+                    <p class="mt-3 font-semibold">1 &#27425;</p>
                 </div>
                 <div class="rounded-lg bg-surface-container-low p-5">
-                    <p class="text-sm text-on-surface-variant">支付方式</p>
-                    <p class="mt-3 font-semibold">支付宝</p>
+                    <p class="text-sm text-on-surface-variant">&#25903;&#20184;&#26041;&#24335;</p>
+                    <p id="summary-payment-method" class="mt-3 font-semibold">&#25903;&#20184;&#23453;</p>
                 </div>
             </div>
 
             <div class="mt-10 rounded-lg border border-slate-200">
                 <div class="grid grid-cols-[1fr_100px_120px] gap-4 border-b border-slate-200 bg-surface-container-low px-5 py-4 text-sm font-semibold text-on-surface-variant">
-                    <span>服务项目</span>
-                    <span class="text-center">数量</span>
-                    <span class="text-right">小计</span>
+                    <span>&#26381;&#21153;&#39033;&#30446;</span>
+                    <span class="text-center">&#25968;&#37327;</span>
+                    <span class="text-right">&#23567;&#35745;</span>
                 </div>
                 <div class="grid grid-cols-[1fr_100px_120px] gap-4 px-5 py-6">
                     <div>
-                        <p class="font-semibold">网站咨询服务费</p>
-                        <p class="mt-2 text-sm leading-6 text-on-surface-variant">线上沟通咨询，提供网站建设与优化建议。</p>
+                        <p class="font-semibold">&#32593;&#31449;&#21672;&#35810;&#26381;&#21153;&#36153;</p>
+                        <p class="mt-2 text-sm leading-6 text-on-surface-variant">&#32447;&#19978;&#27807;&#36890;&#21672;&#35810;&#65292;&#25552;&#20379;&#32593;&#31449;&#24314;&#35774;&#19982;&#20248;&#21270;&#24314;&#35758;&#12290;</p>
                     </div>
                     <div class="text-center text-on-surface-variant">1</div>
-                    <div class="text-right font-semibold">￥200.00</div>
+                    <div class="text-right font-semibold">&yen;200.00</div>
                 </div>
             </div>
 
             <div class="mt-8 rounded-lg bg-blue-50 p-5 text-sm leading-6 text-slate-700">
-                <p class="font-semibold text-slate-900">服务说明</p>
-                <p class="mt-2">付款后将由工作人员通过您预留的联系方式确认咨询时间。本页面为网站开通审核展示页面，实际支付能力以商家支付宝签约开通后为准。</p>
+                <p class="font-semibold text-slate-900">&#26381;&#21153;&#35828;&#26126;</p>
+                <p class="mt-2">&#20184;&#27454;&#21518;&#23558;&#30001;&#24037;&#20316;&#20154;&#21592;&#36890;&#36807;&#24744;&#39044;&#30041;&#30340;&#32852;&#31995;&#26041;&#24335;&#30830;&#35748;&#21672;&#35810;&#26102;&#38388;&#12290;&#26412;&#39029;&#38754;&#20026;&#32593;&#31449;&#24320;&#36890;&#23457;&#26680;&#23637;&#31034;&#39029;&#38754;&#65292;&#23454;&#38469;&#25903;&#20184;&#33021;&#21147;&#20197;&#21830;&#23478;&#25903;&#20184;&#31614;&#32422;&#24320;&#36890;&#21518;&#20026;&#20934;&#12290;</p>
             </div>
         </section>
 
         <aside class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 md:self-start">
             <div class="flex items-center justify-between border-b border-slate-200 pb-5">
                 <div>
-                    <p class="text-sm text-on-surface-variant">应付金额</p>
-                    <p class="mt-2 font-headline text-4xl font-extrabold text-primary">￥200.00</p>
+                    <p class="text-sm text-on-surface-variant">&#24212;&#20184;&#37329;&#39069;</p>
+                    <p class="mt-2 font-headline text-4xl font-extrabold text-primary">&yen;200.00</p>
                 </div>
                 <span class="material-symbols-outlined rounded-lg bg-surface-container-low p-3 text-primary">payments</span>
             </div>
 
-            <div class="mt-6 rounded-lg border border-[#1677ff] bg-[#f2f8ff] p-4">
-                <div class="flex items-center gap-3">
-                    <span class="flex h-10 w-10 items-center justify-center rounded-md bg-[#1677ff] font-headline text-lg font-extrabold text-white">支</span>
-                    <div>
-                        <p class="font-semibold">支付宝支付</p>
-                        <p class="text-sm text-on-surface-variant">推荐使用支付宝完成付款</p>
+            <div class="mt-6 space-y-3">
+                <button id="alipay-option" type="button" onclick="selectPayMethod('alipay')" aria-pressed="true" class="w-full rounded-lg border border-[#1677ff] bg-[#f2f8ff] p-4 text-left transition hover:border-[#0f65d8]">
+                    <div class="flex items-center gap-3">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-md bg-[#1677ff] font-headline text-lg font-extrabold text-white">&#25903;</span>
+                        <div>
+                            <p class="font-semibold">&#25903;&#20184;&#23453;&#25903;&#20184;</p>
+                            <p class="text-sm text-on-surface-variant">&#25512;&#33616;&#20351;&#29992;&#25903;&#20184;&#23453;&#23436;&#25104;&#20184;&#27454;</p>
+                        </div>
                     </div>
-                </div>
+                </button>
+
+                <button id="wechat-option" type="button" onclick="selectPayMethod('wechat')" aria-pressed="false" class="w-full rounded-lg border border-slate-200 bg-white p-4 text-left transition hover:border-[#07c160]">
+                    <div class="flex items-center gap-3">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-md bg-[#07c160] font-headline text-lg font-extrabold text-white">&#24494;</span>
+                        <div>
+                            <p class="font-semibold">&#24494;&#20449;&#25903;&#20184;</p>
+                            <p class="text-sm text-on-surface-variant">&#20351;&#29992;&#24494;&#20449;&#25195;&#30721;&#25110;&#23458;&#25143;&#31471;&#23436;&#25104;&#20184;&#27454;</p>
+                        </div>
+                    </div>
+                </button>
             </div>
 
-            <button type="button" onclick="showPayNotice()" class="mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-[#1677ff] px-6 py-4 text-base font-bold text-white transition hover:bg-[#0f65d8] active:scale-[0.99]">
+            <button id="pay-button" type="button" onclick="showPayNotice()" class="mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-[#1677ff] px-6 py-4 text-base font-bold text-white transition hover:bg-[#0f65d8] active:scale-[0.99]">
                 <span class="material-symbols-outlined text-[22px]">qr_code_scanner</span>
-                立即使用支付宝支付
+                <span id="pay-button-text">&#31435;&#21363;&#20351;&#29992;&#25903;&#20184;&#23453;&#25903;&#20184;</span>
             </button>
 
             <p id="pay-notice" class="mt-4 hidden rounded-lg bg-surface-container-low p-4 text-sm leading-6 text-on-surface-variant">
-                当前为纯前端审核展示页面，商家签约通过后可接入支付宝网站支付接口完成真实收款。
+                &#24403;&#21069;&#20026;&#32431;&#21069;&#31471;&#23457;&#26680;&#23637;&#31034;&#39029;&#38754;&#65292;&#21830;&#23478;&#31614;&#32422;&#36890;&#36807;&#21518;&#21487;&#25509;&#20837;&#25903;&#20184;&#23453;&#32593;&#31449;&#25903;&#20184;&#25509;&#21475;&#23436;&#25104;&#30495;&#23454;&#25910;&#27454;&#12290;
             </p>
 
             <dl class="mt-8 space-y-4 text-sm">
                 <div class="flex justify-between gap-4">
-                    <dt class="text-on-surface-variant">订单编号</dt>
+                    <dt class="text-on-surface-variant">&#35746;&#21333;&#32534;&#21495;</dt>
                     <dd class="font-medium">SCOR-CONSULT-200</dd>
                 </div>
                 <div class="flex justify-between gap-4">
-                    <dt class="text-on-surface-variant">商品单价</dt>
-                    <dd class="font-medium">￥200.00</dd>
+                    <dt class="text-on-surface-variant">&#21830;&#21697;&#21333;&#20215;</dt>
+                    <dd class="font-medium">&yen;200.00</dd>
                 </div>
                 <div class="flex justify-between gap-4">
-                    <dt class="text-on-surface-variant">订单总额</dt>
-                    <dd class="font-medium">￥200.00</dd>
+                    <dt class="text-on-surface-variant">&#35746;&#21333;&#24635;&#39069;</dt>
+                    <dd class="font-medium">&yen;200.00</dd>
                 </div>
             </dl>
         </aside>
     </main>
 
     <script>
+        const payMethods = {
+            alipay: {
+                label: '\u652f\u4ed8\u5b9d',
+                buttonText: '\u7acb\u5373\u4f7f\u7528\u652f\u4ed8\u5b9d\u652f\u4ed8',
+                notice: '\u5f53\u524d\u4e3a\u7eaf\u524d\u7aef\u5ba1\u6838\u5c55\u793a\u9875\u9762\uff0c\u5546\u5bb6\u7b7e\u7ea6\u901a\u8fc7\u540e\u53ef\u63a5\u5165\u652f\u4ed8\u5b9d\u7f51\u7ad9\u652f\u4ed8\u63a5\u53e3\u5b8c\u6210\u771f\u5b9e\u6536\u6b3e\u3002',
+                buttonClass: 'mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-[#1677ff] px-6 py-4 text-base font-bold text-white transition hover:bg-[#0f65d8] active:scale-[0.99]',
+                selectedClass: 'w-full rounded-lg border border-[#1677ff] bg-[#f2f8ff] p-4 text-left transition hover:border-[#0f65d8]',
+                idleClass: 'w-full rounded-lg border border-slate-200 bg-white p-4 text-left transition hover:border-[#1677ff]'
+            },
+            wechat: {
+                label: '\u5fae\u4fe1',
+                buttonText: '\u7acb\u5373\u4f7f\u7528\u5fae\u4fe1\u652f\u4ed8',
+                notice: '\u5f53\u524d\u4e3a\u7eaf\u524d\u7aef\u5ba1\u6838\u5c55\u793a\u9875\u9762\uff0c\u5546\u5bb6\u7b7e\u7ea6\u901a\u8fc7\u540e\u53ef\u63a5\u5165\u5fae\u4fe1\u652f\u4ed8\u63a5\u53e3\u5b8c\u6210\u771f\u5b9e\u6536\u6b3e\u3002',
+                buttonClass: 'mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-[#07c160] px-6 py-4 text-base font-bold text-white transition hover:bg-[#06ad56] active:scale-[0.99]',
+                selectedClass: 'w-full rounded-lg border border-[#07c160] bg-[#f0fff7] p-4 text-left transition hover:border-[#06ad56]',
+                idleClass: 'w-full rounded-lg border border-slate-200 bg-white p-4 text-left transition hover:border-[#07c160]'
+            }
+        };
+
+        function selectPayMethod(method) {
+            const current = payMethods[method];
+            const otherMethod = method === 'alipay' ? 'wechat' : 'alipay';
+
+            document.getElementById('summary-payment-method').textContent = current.label;
+            document.getElementById('pay-button-text').textContent = current.buttonText;
+            document.getElementById('pay-button').className = current.buttonClass;
+            document.getElementById('pay-notice').textContent = current.notice;
+            document.getElementById('alipay-option').className = method === 'alipay' ? current.selectedClass : payMethods.alipay.idleClass;
+            document.getElementById('wechat-option').className = method === 'wechat' ? current.selectedClass : payMethods.wechat.idleClass;
+            document.getElementById(otherMethod + '-option').setAttribute('aria-pressed', 'false');
+            document.getElementById(method + '-option').setAttribute('aria-pressed', 'true');
+        }
+
         function showPayNotice() {
             document.getElementById('pay-notice').classList.remove('hidden');
         }
