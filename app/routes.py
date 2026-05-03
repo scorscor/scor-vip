@@ -29,6 +29,12 @@ def index():
     return render_template('index.html')
 
 
+@main.route('/pay')
+def pay():
+    """支付宝网站审核支付页"""
+    return render_template('payment.html')
+
+
 @main.route('/favicon.ico')
 def favicon():
     return send_from_directory(current_app.static_folder, 'favicon.ico')
