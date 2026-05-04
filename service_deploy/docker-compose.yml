@@ -16,6 +16,7 @@ services:
       - "127.0.0.1:5003:5003"
     volumes:
       - scor-vip-data:/app/instance
+    command: sh -c "python bootstrap_db.py && python -m gunicorn --bind 0.0.0.0:5003 --workers 2 --threads 4 'app:create_app()'"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5003/')"]
       interval: 30s

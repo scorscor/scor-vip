@@ -47,6 +47,58 @@ function Get-EnvValue {
   return $value
 }
 
+function Resolve-SshIdentityFile {
+  param(
+    [string]$ConfigPath,
+    [string]$HostName,
+    [string]$RepoRootPath
+  )
+
+  $activeHost = $false
+  foreach ($line in Get-Content -LiteralPath $ConfigPath) {
+    $trimmed = $line.Trim()
+    if ($trimmed -match '^Host\s+(.+)$') {
+      $hostPatterns = $Matches[1] -split '\s+'
+      $activeHost = $hostPatterns -contains $HostName
+      continue
+    }
+
+    if ($activeHost -and $trimmed -match '^IdentityFile\s+(.+)$') {
+      $identityFile = $Matches[1].Trim().Trim('"')
+      if ([System.IO.Path]::IsPathRooted($identityFile)) {
+        return (Resolve-Path -LiteralPath $identityFile).Path
+      }
+      return (Resolve-Path -LiteralPath (Join-Path $RepoRootPath $identityFile)).Path
+    }
+  }
+
+  return $null
+}
+
+function Set-SshPrivateKeyPermissions {
+  param([string]$KeyPath)
+
+  $isWindowsHost = $env:OS -eq "Windows_NT"
+  if ([string]::IsNullOrWhiteSpace($KeyPath) -or -not $isWindowsHost) {
+    return
+  }
+
+  $acl = Get-Acl -LiteralPath $KeyPath
+  $unsafeRules = @($acl.Access | Where-Object {
+    $_.IdentityReference.Value -match '\\(Users|Authenticated Users|Everyone)$'
+  })
+  if ($unsafeRules.Count -eq 0) {
+    return
+  }
+
+  $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+  $icaclsOutput = & icacls $KeyPath /inheritance:r /remove:g "Users" "Authenticated Users" "Everyone" /grant:r "${currentUser}:F" "SYSTEM:F" "Administrators:F" 2>&1
+  if ($LASTEXITCODE -ne 0) {
+    $icaclsOutput | ForEach-Object { Write-Host $_ }
+    Write-Warning "Unable to automatically tighten SSH key permissions. Run this terminal as administrator or fix the key ACL manually if OpenSSH rejects it."
+  }
+}
+
 if ($ImageTag -notmatch '^[A-Za-z0-9._/:@-]+$') {
   throw "Invalid ImageTag: $ImageTag"
 }
@@ -56,11 +108,16 @@ Require-Command ssh
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Resolve-Path (Join-Path $ScriptDir "..")
 $SshConfigPath = (Resolve-Path (Join-Path $RepoRoot $SshConfig)).Path
+$SshIdentityFile = Resolve-SshIdentityFile -ConfigPath $SshConfigPath -HostName $SshHost -RepoRootPath $RepoRoot.Path
+Set-SshPrivateKeyPermissions -KeyPath $SshIdentityFile
 $GhcrToken = Get-EnvValue $GhcrTokenEnv
 
 Write-Host "Repo:       $($RepoRoot.Path)"
 Write-Host "Image:      $ImageTag"
 Write-Host "SSH host:   $SshHost"
+if (-not [string]::IsNullOrWhiteSpace($SshIdentityFile)) {
+  Write-Host "SSH key:    $SshIdentityFile"
+}
 Write-Host "Remote dir: $RemoteDir"
 Write-Host "Domain:     $AppDomain"
 if ([string]::IsNullOrWhiteSpace($GhcrToken)) {
@@ -113,6 +170,7 @@ services:
       - "127.0.0.1:5003:5003"
     volumes:
       - scor-vip-data:/app/instance
+    command: sh -c "python bootstrap_db.py && python -m gunicorn --bind 0.0.0.0:5003 --workers 2 --threads 4 'app:create_app()'"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5003/')"]
       interval: 30s
@@ -167,7 +225,13 @@ $RemoteScript = $RemoteScriptTemplate.
   Replace("__GHCR_TOKEN__", (ConvertTo-BashDoubleQuotedLiteral $GhcrToken))
 
 Run-Step "Pull image and deploy on server" {
-  $RemoteScript | & ssh -F $SshConfigPath $SshHost "bash -s"
+  $sshArgs = @("-F", $SshConfigPath)
+  if (-not [string]::IsNullOrWhiteSpace($SshIdentityFile)) {
+    $sshArgs += @("-i", $SshIdentityFile)
+  }
+  $sshArgs += @($SshHost, "bash -s")
+
+  $RemoteScript | & ssh @sshArgs
   if ($LASTEXITCODE -ne 0) {
     throw "ssh failed with exit code $LASTEXITCODE"
   }
