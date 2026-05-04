@@ -13,3 +13,4 @@ instance/*
 *.sqlite3
 .env
 .DS_Store
+ssh/
