@@ -1,530 +1,100 @@
 <!DOCTYPE html>
-<html class="light" lang="zh-CN">
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Scor的主页</title>
-    <link href="{{ url_for('static', filename='favicon.ico') }}" rel="icon" type="image/x-icon"/>
-    <link href="{{ url_for('static', filename='favicon/favicon-64x64.ico') }}" rel="icon" sizes="64x64" type="image/x-icon"/>
-    <link href="{{ url_for('static', filename='favicon/favicon-128x128.ico') }}" rel="icon" sizes="128x128" type="image/x-icon"/>
-    <link href="{{ url_for('static', filename='favicon/favicon-200x200.ico') }}" rel="icon" sizes="200x200" type="image/x-icon"/>
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "error": "#ba1a1a",
-                        "inverse-primary": "#b6c4ff",
-                        "on-secondary-fixed-variant": "#474746",
-                        "on-primary-fixed": "#001551",
-                        "on-secondary-container": "#636262",
-                        "on-tertiary-container": "#ffe1d9",
-                        "tertiary-container": "#c13301",
-                        "tertiary": "#972500",
-                        "on-primary-container": "#e3e6ff",
-                        "outline-variant": "#c3c5d9",
-                        "primary-fixed-dim": "#b6c4ff",
-                        "primary-fixed": "#dce1ff",
-                        "surface": "#f9f9fb",
-                        "primary-container": "#0055ff",
-                        "on-primary-fixed-variant": "#0039b3",
-                        "surface-bright": "#f9f9fb",
-                        "surface-container-highest": "#e2e2e4",
-                        "surface-tint": "#004dea",
-                        "surface-container-high": "#e8e8ea",
-                        "surface-variant": "#e2e2e4",
-                        "surface-container-low": "#f3f3f5",
-                        "error-container": "#ffdad6",
-                        "secondary-fixed": "#e5e2e1",
-                        "on-tertiary": "#ffffff",
-                        "on-background": "#1a1c1d",
-                        "primary": "#0041c8",
-                        "on-surface": "#1a1c1d",
-                        "on-primary": "#ffffff",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container": "#edeef0",
-                        "inverse-surface": "#2f3132",
-                        "surface-dim": "#d9dadc",
-                        "secondary": "#5f5e5e",
-                        "on-tertiary-fixed": "#3b0900",
-                        "background": "#f9f9fb",
-                        "on-secondary-fixed": "#1c1b1b",
-                        "tertiary-fixed": "#ffdbd1",
-                        "on-tertiary-fixed-variant": "#872100",
-                        "on-surface-variant": "#434656",
-                        "on-error": "#ffffff",
-                        "tertiary-fixed-dim": "#ffb5a0",
-                        "on-error-container": "#93000a",
-                        "outline": "#737688",
-                        "inverse-on-surface": "#f0f0f2",
-                        "secondary-fixed-dim": "#c8c6c5",
-                        "secondary-container": "#e2dfde",
-                        "on-secondary": "#ffffff"
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.125rem",
-                        lg: "0.25rem",
-                        xl: "0.5rem",
-                        full: "0.75rem"
-                    },
-                    fontFamily: {
-                        headline: ["Manrope"],
-                        body: ["Inter"],
-                        label: ["Inter"]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            display: inline-block;
-            width: 1em;
-            min-width: 1em;
-            overflow: hidden;
-            color: transparent;
-            line-height: 1;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-        .material-symbols-ready .material-symbols-outlined {
-            color: inherit;
-        }
-        .no-border.tonal-shift-surface {
-            border: none;
-            background-color: rgba(255, 255, 255, 0.8);
-        }
-        .tonal-shift-from-surface-to-low {
-            background-color: #f3f3f5;
-        }
-        .text-shadow-subtle {
-            text-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .loading {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            border-radius: 8px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-        .toast-success {
-            background-color: #10b981;
-            color: white;
-        }
-        .toast-error {
-            background-color: #ef4444;
-            color: white;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .contact-layout { display: grid; gap: 3rem; width: 100%; text-align: left; }
-        .contact-form { display: grid; gap: 1.25rem; padding: 2rem; border: 1px solid #434656; border-radius: 12px; background: #242627; }
-        .contact-form label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: #e2e2e4; }
-        .contact-form input, .contact-form select, .contact-form textarea { width: 100%; padding: 0.8rem 1rem; border: 1px solid #636567; border-radius: 6px; background: #1a1c1d; color: #f9f9fb; font: inherit; }
-        .contact-form textarea { resize: vertical; min-height: 150px; }
-        .contact-form :focus-visible { outline: 2px solid #b6c4ff; outline-offset: 3px; }
-        .contact-form input::placeholder, .contact-form textarea::placeholder { color: #a6a8ab; }
-        .contact-form button { padding: 0.9rem 1.5rem; border-radius: 6px; background: #0055ff; color: white; font-weight: 700; cursor: pointer; }
-        .contact-form button:disabled { opacity: 0.6; cursor: wait; }
-        .contact-form button:hover:not(:disabled) { background: #0041c8; }
-        .contact-form-note { color: #c3c5d9; font-size: 0.875rem; line-height: 1.7; }
-        .contact-status { min-height: 1.5em; font-size: 0.875rem; }
-        .contact-status[data-state="success"] { color: #a7f3d0; }
-        .contact-status[data-state="error"] { color: #ffb4ab; }
-        @media (min-width: 900px) { .contact-layout { grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; } }
-        @media (max-width: 480px) { .contact-form { padding: 1.25rem; } }
-    </style>
-    <script>
-        if (document.fonts) {
-            document.fonts.load('24px "Material Symbols Outlined"').then(function () {
-                document.documentElement.classList.add('material-symbols-ready');
-            });
-        }
-    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>思刻软件开发｜网站定制、业务系统与自动化脚本</title>
+    <meta name="description" content="思刻软件开发，由资深全栈开发者直接对接。提供网站定制、业务系统、脚本自动化、AI 应用接入与现有系统升级，从需求梳理到开发上线，直接沟通你的项目。">
+    <meta name="theme-color" content="#f7f8f2">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='brand/sike-mark.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <script src="{{ url_for('static', filename='js/home.js') }}" defer></script>
 </head>
-<body class="bg-surface text-on-surface font-body selection:bg-slate-900 selection:text-white">
-<!-- Top NavBar -->
-<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-none">
-    <div class="flex justify-between items-center px-8 md:px-16 py-6 w-full max-w-screen-2xl mx-auto font-['Manrope'] tracking-tight">
-        <div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-50">
-            新时代的数字人
+<body>
+<svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-diagonal" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></symbol>
+    <symbol id="i-web" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01M8 13l-2 2 2 2m8-4 2 2-2 2m-3-5-2 7"/></symbol>
+    <symbol id="i-system" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M14 6h4v4M6 14v4h4"/></symbol>
+    <symbol id="i-script" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 4 3-4 3m6 1h4"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+</svg>
+<a class="skip-link" href="#main">跳转到正文</a>
+<header class="site-header">
+    <nav class="container nav" aria-label="主导航">
+        <a class="brand" href="#home" aria-label="思刻软件开发首页"><img class="brand-mark" src="{{ url_for('static', filename='brand/sike-mark.svg') }}" width="41" height="41" alt="" aria-hidden="true"><span>思刻软件开发<span class="brand-caption">网站 · 系统 · 自动化</span></span></a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="展开导航"><span></span><span></span></button>
+        <div id="nav-links" class="nav-links">
+            <a href="#services" data-nav-link>开发服务</a><a href="#works" data-nav-link>项目案例</a><a href="#process" data-nav-link>合作流程</a>
+            <a class="nav-cta" href="#contact">聊聊你的需求 <svg class="icon" aria-hidden="true"><use href="#i-diagonal"/></svg></a>
         </div>
-        <div class="hidden md:flex items-center space-x-12">
-            <a class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 pb-1 transition-colors" data-nav-link data-section="about" href="#about">关于</a>
-            <a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border-b-2 border-transparent pb-1" data-nav-link data-section="works" href="#works">作品</a>
-            <a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors border-b-2 border-transparent pb-1" data-nav-link data-section="contact" href="#contact">联系</a>
+    </nav>
+</header>
+<main id="main">
+    <section id="home" class="hero container">
+        <div class="hero-copy">
+            <p class="eyebrow"><span class="small-dot"></span> SIKE SOFTWARE / CUSTOM DEVELOPMENT</p>
+            <h1>你的业务想法，<br>值得被<span class="highlight">认真实现<svg viewBox="0 0 360 15" aria-hidden="true"><path d="M3 10Q170-3 357 8"/></svg></span>。</h1>
+            <p class="hero-description">资深全栈开发经验，直接沟通你的需求。<br>从一个网站、一套业务系统，到每天帮你省事的脚本，<br class="desktop-break">把需求变成真正好用的软件。</p>
+            <div class="hero-actions"><a class="button button-dark" href="#contact">说说你想做什么 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a><a class="text-link" href="#works">看看实际项目 <span aria-hidden="true">↘</span></a></div>
+            <div class="hero-assurances"><span><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>直接与开发者沟通</span><span><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>从需求梳理到上线</span></div>
         </div>
-        <a href="/pay" class="hidden bg-primary text-on-primary px-6 py-2.5 rounded-md font-medium text-sm hover:opacity-80 transition-opacity active:scale-95 duration-200">
-            咨询定价
-        </a>
-    </div>
-</nav>
-
-<main class="pt-24">
-    <!-- Hero Section -->
-    <section class="min-h-[870px] flex flex-col justify-center px-8 md:px-16 max-w-screen-2xl mx-auto py-24">
-        <div class="max-w-4xl">
-            <span class="inline-block text-primary font-label text-sm uppercase tracking-[0.2em] mb-8 animate-fade-in">坐标中国扬州</span>
-            <h1 class="font-headline text-5xl md:text-8xl font-extrabold tracking-tight text-on-surface leading-[1.05] mb-10">
-                我是 <span class="text-primary italic" id="hero-name">Scor</span>，一位创造数字价值的架构设计师
-            </h1>
-            <p class="font-body text-xl md:text-2xl text-on-surface-variant max-w-2xl leading-relaxed mb-12">
-                AI时代每一个想法都能快速变为价值，让我来帮助你实现梦想
-            </p>
-            <div class="flex items-center gap-8">
-                <button onclick="document.getElementById('works').scrollIntoView({behavior: 'smooth'})" class="bg-primary text-on-primary px-8 py-4 rounded-md font-semibold flex items-center gap-3 hover:opacity-90 transition-all group">
-                    查看我的个人作品
-                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                </button>
+        <div class="build-board" aria-label="从需求到软件的开发过程示意">
+            <div class="board-header"><span><span class="small-dot"></span> 从想法，到可用的软件</span><span class="mono">01 — 03</span></div>
+            <div class="brief-note"><span class="mono note-label">01 / YOUR IDEA</span><p>“这个重复的流程，<br>能不能让程序来做？”</p><span class="note-corner" aria-hidden="true">↗</span></div>
+            <div class="board-connector" aria-hidden="true">↓</div>
+            <div class="code-window">
+                <div class="code-toolbar"><div class="window-dots"><i></i><i></i><i></i></div><span>build_your_idea.py</span><svg class="icon" aria-hidden="true"><use href="#i-script"/></svg></div>
+                <div class="code-content" aria-label="开发思路示意"><span class="line-no">01</span><code class="code-muted"># 先理解业务，再写代码</code><span class="line-no">02</span><code><span class="code-accent">def</span> build(idea):</code><span class="line-no">03</span><code>    plan = clarify(idea)</code><span class="line-no">04</span><code>    product = develop(plan)</code><span class="line-no">05</span><code>    <span class="code-accent">return</span> launch(product)</code></div>
+                <div class="code-footer"><span class="code-cursor" aria-hidden="true"></span> 让代码解决实际问题<span class="mono">02 / BUILD</span></div>
             </div>
-        </div>
-    </section>
-
-    <!-- Project Grid -->
-    <section id="works" class="bg-surface-container-low py-32 px-8 md:px-16 scroll-mt-32">
-        <div class="max-w-screen-2xl mx-auto">
-            <div class="flex justify-between items-end mb-20">
-                <div>
-                    <h2 class="font-headline text-4xl md:text-5xl font-bold tracking-tight mb-4">精选作品</h2>
-                    <p class="text-on-surface-variant text-lg">精心策划的高端设计系统与界面作品集</p>
-                </div>
-                <span class="font-label text-xs uppercase tracking-widest text-on-surface-variant pb-2 border-b border-outline-variant/30 hidden md:block" id="project-count">01 — 04 作品</span>
-            </div>
-            <div id="projects-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
-                <!-- 项目将通过 JS 动态加载 -->
-                <div class="col-span-full text-center py-12 text-on-surface-variant">加载中...</div>
-            </div>
+            <div class="delivery-strip"><span class="delivery-icon"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span><div><strong>从想法，到日常使用</strong><span>网站 · 系统 · 自动化工具</span></div><span class="mono">03 / SHIP</span></div>
+            <span class="board-caption">LESS REPETITION. MORE POSSIBILITY.</span>
         </div>
     </section>
-
-    <!-- About Section -->
-    <section id="about" class="py-32 px-8 md:px-16 max-w-screen-2xl mx-auto scroll-mt-32">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            <div class="lg:col-span-5">
-                <h2 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight mb-8">设计理念与方法</h2>
-                <p class="font-body text-lg text-on-surface-variant leading-relaxed mb-12">
-                    设计并非表层装饰，而是系统架构的基础。我的工作方式以深度研究与精细化打磨为核心，确保每一处细节在实现功能逻辑的同时，兼具严谨的结构美感与体验价值。
-
-                </p>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low">
-                        <span class="material-symbols-outlined text-primary">auto_awesome</span>
-                        <span class="font-label text-sm font-semibold">以需求为中心的编排设计</span>
-                    </div>
-                    <div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low">
-                        <span class="material-symbols-outlined text-primary">code</span>
-                        <span class="font-label text-sm font-semibold">简洁高效的架构</span>
-                    </div>
-                    <div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low">
-                        <span class="material-symbols-outlined text-primary">tune</span>
-                        <span class="font-label text-sm font-semibold">精准的动效与交互</span>
-                    </div>
-                </div>
-            </div>
-            <div class="lg:col-span-7 grid grid-cols-2 gap-4">
-                <div class="col-span-2 bg-primary text-on-primary p-12 rounded-xl flex flex-col justify-between min-h-[300px] shadow-lg shadow-primary/20">
-                    <h3 class="text-4xl font-headline font-bold">技能</h3>
-                    <div id="skills-container" class="grid grid-cols-2 md:grid-cols-3 gap-6 mt-8">
-                        <!-- 技能将通过 JS 动态加载 -->
-                    </div>
-                </div>
-                <div class="bg-surface-container-highest p-8 rounded-xl aspect-square flex items-center justify-center text-center">
-                    <div>
-                        <span class="text-4xl font-bold font-headline block">10+</span>
-                        <span class="text-xs uppercase tracking-tighter text-on-surface-variant">年前后端经验</span>
-                    </div>
-                </div>
-                <div class="bg-surface-container-highest p-8 rounded-xl aspect-square flex items-center justify-center text-center">
-                    <div>
-                        <span class="text-4xl font-bold font-headline block">30+</span>
-                        <span class="text-xs uppercase tracking-tighter text-on-surface-variant">中型项目</span>
-                    </div>
-                </div>
-            </div>
+    <div class="capability-strip"><div class="container"><span>为你的业务而开发</span><span>企业网站</span><i>+</i><span>业务系统</span><i>+</i><span>脚本自动化</span><i>+</i><span>AI 应用接入</span></div></div>
+    <section id="services" class="section container">
+        <div class="section-heading"><div><p class="eyebrow">01 / WHAT I BUILD</p><h2>需求不必很大，<br>解决问题就有价值。</h2></div><p class="section-intro">做一款新产品，优化一段工作流程，<br>或让现有系统更好用，都可以从这里开始。</p></div>
+        <div class="services-grid">
+            <article class="service-card"><div class="service-top"><span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#i-web"/></svg></span><span class="mono">01</span></div><h3>网站与产品定制</h3><p>让你的品牌、服务或产品，拥有一个真正属于自己的线上入口。</p><div class="service-tags"><span>企业官网</span><span>产品网站</span><span>小程序</span></div><a href="#contact" data-service="网站与产品定制">聊聊网站需求 <svg class="icon" aria-hidden="true"><use href="#i-diagonal"/></svg></a></article>
+            <article class="service-card"><div class="service-top"><span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#i-system"/></svg></span><span class="mono">02</span></div><h3>业务系统开发</h3><p>围绕实际业务搭建工具，把散落的数据和协作流程连接起来。</p><div class="service-tags"><span>管理后台</span><span>内部工具</span><span>接口对接</span></div><a href="#contact" data-service="业务系统开发">说说业务场景 <svg class="icon" aria-hidden="true"><use href="#i-diagonal"/></svg></a></article>
+            <article class="service-card service-featured"><div class="service-top"><span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#i-script"/></svg></span><span class="mono">03</span></div><h3>脚本与自动化</h3><p>把每天重复的复制、整理、检查交给程序，让时间留给更重要的事。</p><div class="service-tags"><span>批量处理</span><span>数据整理</span><span>办公自动化</span></div><a href="#contact" data-service="脚本与自动化">把重复工作交给代码 <svg class="icon" aria-hidden="true"><use href="#i-diagonal"/></svg></a></article>
+            <article class="service-card"><div class="service-top"><span class="service-icon"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg></span><span class="mono">04</span></div><h3>AI 接入与系统升级</h3><p>给已有产品补上需要的能力，让新技术服务于具体、可用的业务场景。</p><div class="service-tags"><span>AI 应用</span><span>功能扩展</span><span>老系统升级</span></div><a href="#contact" data-service="AI 接入与系统升级">讨论改进方向 <svg class="icon" aria-hidden="true"><use href="#i-diagonal"/></svg></a></article>
         </div>
     </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-32 px-8 md:px-16 bg-on-background text-surface scroll-mt-32">
-        <div class="max-w-screen-2xl mx-auto contact-layout">
-            <div>
-                <p class="text-sm tracking-widest mb-6 text-slate-300">联系我们</p>
-                <h2 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter max-w-4xl">一起创造<span class="text-primary italic">非凡</span>之作</h2>
-                <p class="mt-8 text-slate-300 leading-relaxed max-w-md">有项目想法、合作需求或想交流的问题？留下你的联系方式和想法，我会尽快与你联系。</p>
-                <p class="contact-form-note mt-6">留言仅供管理员查看，不会公开展示。联系方式仅用于回复本次咨询。</p>
-            </div>
-            <form id="contact-form" class="contact-form" aria-label="私密联系表单">
-                <div>
-                    <label for="contact-name">姓名或称呼 *</label>
-                    <input id="contact-name" name="name" autocomplete="name" maxlength="100" placeholder="怎么称呼你？" required>
-                </div>
-                <div>
-                    <label for="contact-type">联系方式类型 *</label>
-                    <select id="contact-type" name="contact_type">
-                        <option value="email">邮箱</option>
-                        <option value="wechat">微信</option>
-                        <option value="phone">电话</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="contact-value" id="contact-value-label">邮箱地址 *</label>
-                    <input id="contact-value" name="contact" type="email" autocomplete="email" maxlength="120" placeholder="方便回复你的邮箱" required>
-                </div>
-                <div>
-                    <label for="contact-content">留言内容 *</label>
-                    <textarea id="contact-content" name="content" rows="5" maxlength="5000" placeholder="介绍一下你的需求、想法或问题……" required></textarea>
-                </div>
-                <button id="contact-submit" type="submit">发送私密留言</button>
-                <p id="contact-status" class="contact-status" role="status" aria-live="polite"></p>
-            </form>
-        </div>
+    <section id="works" class="section projects-section"><div class="container">
+        <div class="section-heading"><div><p class="eyebrow">02 / SELECTED WORK</p><h2>不只停留在想法。</h2></div><div class="works-intro"><p>这些实际开发的产品，<br>是理解我的开发能力最直接的方式。</p><span id="project-count" class="mono">项目案例</span></div></div>
+        <div id="projects-container" class="projects-grid" aria-live="polite"><p class="load-state">正在加载项目案例…</p></div>
+        <div class="projects-more"><button id="projects-toggle" class="button button-outline" type="button" hidden aria-expanded="false" aria-controls="projects-container">查看全部项目 <span aria-hidden="true">+</span></button></div>
+    </div></section>
+    <section id="about" class="section container about-section">
+        <div class="about-identity"><img class="developer-mark" src="{{ url_for('static', filename='brand/sike-mark.svg') }}" width="83" height="83" alt="思刻软件开发标志"><p class="eyebrow">YOUR DEVELOPMENT PARTNER</p><h2>你好，这里是思刻。<br>写代码，也理解需求。</h2><p>拥有资深网站与全栈开发经验，关注产品从“能用”到“好用”的完整过程。我希望把技术讲明白，也把你的业务问题弄清楚。</p><a class="text-link" href="#contact">直接和我聊聊 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+        <div class="working-principles"><div class="principle"><span class="mono">01</span><div><h3>先说清要解决什么</h3><p>不用先写一份专业需求文档。告诉我现在怎么做、哪里费时间、希望有什么变化。</p></div></div><div class="principle"><span class="mono">02</span><div><h3>用合适的方式实现</h3><p>能用一个脚本解决，就从一个脚本开始；需要长期使用的系统，就认真规划架构和维护。</p></div></div><div class="principle"><span class="mono">03</span><div><h3>关注交付后的使用</h3><p>开发之外，也考虑部署、操作体验和后续迭代，让成果进入你的实际工作。</p></div></div><div id="skills-container" class="skills-list" aria-label="开发能力"></div></div>
     </section>
+    <section id="process" class="section process-section"><div class="container">
+        <div class="section-heading"><div><p class="eyebrow">03 / HOW WE WORK</p><h2>把合作过程，讲清楚。</h2></div><p class="section-intro">每一步都有明确的沟通内容，<br>让你知道项目如何向前推进。</p></div>
+        <ol class="process-list"><li><span class="process-number mono">01</span><h3>聊需求</h3><p>了解业务场景、目标用户，以及你想解决的问题。</p><span class="process-output">明确目标与范围</span></li><li><span class="process-number mono">02</span><h3>定方案</h3><p>确认功能边界、实现方式、预算和开发安排。</p><span class="process-output">确认方案与报价</span></li><li><span class="process-number mono">03</span><h3>做开发</h3><p>按约定阶段展示进展，及时沟通和确认关键细节。</p><span class="process-output">分阶段体验与反馈</span></li><li><span class="process-number mono">04</span><h3>交付上线</h3><p>按约定验收、部署，说明使用方式与后续维护安排。</p><span class="process-output">验收与交付</span></li></ol>
+    </div></section>
+    <section class="section container faq-section"><div><p class="eyebrow">BEFORE WE START</p><h2>你可能想先问。</h2><p class="section-intro">还没想清楚，也可以聊聊。</p></div><div class="faq-list">
+        <details><summary>只有一个大概想法，可以沟通吗？<span aria-hidden="true">+</span></summary><p>可以。先描述你的业务、当前做法和想改善的地方，再一起拆解需要的功能与优先级。</p></details>
+        <details><summary>小脚本、单个功能也接吗？<span aria-hidden="true">+</span></summary><p>可以讨论。批量处理文件、自动整理数据、接口对接或单个页面，都可以作为独立需求评估，不一定要开发完整系统。</p></details>
+        <details><summary>费用和周期怎么确定？<span aria-hidden="true">+</span></summary><p>根据功能范围、复杂度、已有基础和交付要求评估。需求确认后再讨论报价与排期，不用先猜一个固定套餐。</p></details>
+        <details><summary>已有网站或系统，能继续改吗？<span aria-hidden="true">+</span></summary><p>可以先评估现有技术、代码和部署环境，再确定适合直接扩展、局部优化，还是分阶段升级。</p></details>
+    </div></section>
+    <section id="contact" class="contact-section"><div class="container contact-layout">
+        <div class="contact-copy"><p class="eyebrow">04 / LET’S BUILD SOMETHING</p><h2>下一件好用的软件，<br>从你的<span>需求</span>开始。</h2><p>不需要专业术语，也不用准备完整方案。<br>告诉我你想做什么，我们一起把它理清楚。</p><div class="contact-points"><span><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>描述你的场景与目标</span><span><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>留下方便联系你的方式</span><span><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>一起讨论实现方案</span></div><div class="contact-signature"><img class="brand-mark" src="{{ url_for('static', filename='brand/sike-mark.svg') }}" width="41" height="41" alt="" aria-hidden="true"><div><strong>思刻软件开发</strong><span>你的定制开发伙伴</span></div></div></div>
+        <form id="contact-form" class="contact-form" aria-label="私密联系表单">
+            <div class="form-heading"><h3>说说你的需求</h3><span>LET’S TALK ↗</span></div>
+            <div><label for="request-type">你想做什么？</label><select id="request-type"><option value="">先聊聊，还没确定</option><option>网站与产品定制</option><option>业务系统开发</option><option>脚本与自动化</option><option>AI 接入与系统升级</option></select></div>
+            <div class="form-row"><div><label for="contact-name">姓名或称呼 *</label><input id="contact-name" name="name" autocomplete="name" maxlength="100" placeholder="怎么称呼你？" required></div><div><label for="contact-type">联系方式类型 *</label><select id="contact-type" name="contact_type"><option value="email">邮箱</option><option value="wechat">微信</option><option value="phone">电话</option></select></div></div>
+            <div><label for="contact-value" id="contact-value-label">邮箱地址 *</label><input id="contact-value" name="contact" type="email" autocomplete="email" maxlength="120" placeholder="方便回复你的邮箱" required></div>
+            <div><label for="contact-content">需求描述 *</label><textarea id="contact-content" name="content" rows="4" maxlength="4900" placeholder="想解决什么问题？需要哪些功能？如果有期望的时间或预算，也可以一起告诉我。" required></textarea></div>
+            <button id="contact-submit" class="button button-lime" type="submit">提交定制需求 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <p class="form-privacy">你的需求仅供管理员查看，不会公开展示。联系方式仅用于回复本次咨询。</p><p id="contact-status" class="contact-status" role="status" aria-live="polite"></p>
+        </form>
+    </div></section>
 </main>
-
-<!-- Footer -->
-<footer class="w-full border-t border-slate-200/20 dark:border-slate-800/20 bg-slate-50 dark:bg-slate-950">
-    <div class="flex flex-col md:flex-row justify-between items-center px-8 md:px-16 py-12 w-full max-w-screen-2xl mx-auto font-['Inter'] text-sm tracking-wide uppercase">
-        <div class="text-slate-500 dark:text-slate-400 mb-8 md:mb-0">
-            © 2026 一人AI团队 匠心打造。
-        </div>
-        <div class="flex flex-wrap justify-center gap-8 md:gap-12">
-            <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#">领英</a>
-            <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#">Dribbble</a>
-            <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#">Instagram</a>
-            <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#contact">联系我们</a>
-        </div>
-    </div>
-</footer>
-
-<div class="bg-[#333333] py-3 text-center">
-    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer"
-        class="text-sm text-gray-300 hover:text-white transition-colors">
-        苏ICP备2022040643号-1
-    </a>
-</div>
-
-<script>
-    // API 基础 URL
-    const API_BASE = '';
-
-    function setActiveNavLink(sectionId) {
-        document.querySelectorAll('[data-nav-link]').forEach(link => {
-            const isActive = link.dataset.section === sectionId;
-            link.classList.toggle('text-blue-600', isActive);
-            link.classList.toggle('dark:text-blue-400', isActive);
-            link.classList.toggle('border-blue-600', isActive);
-            link.classList.toggle('text-slate-600', !isActive);
-            link.classList.toggle('dark:text-slate-400', !isActive);
-            link.classList.toggle('border-transparent', !isActive);
-        });
-    }
-
-    function scrollToSection(sectionId) {
-        const section = document.getElementById(sectionId);
-        const nav = document.querySelector('nav');
-        if (!section || !nav) {
-            return;
-        }
-
-        const offsetTop = section.getBoundingClientRect().top + window.scrollY - nav.offsetHeight - 16;
-        window.scrollTo({
-            top: Math.max(offsetTop, 0),
-            behavior: 'smooth'
-        });
-    }
-
-    // 滚动到联系部分
-    function scrollToContact() {
-        setActiveNavLink('contact');
-        scrollToSection('contact');
-    }
-
-    function initContactForm() {
-        const form = document.getElementById('contact-form');
-        const contactType = document.getElementById('contact-type');
-        const contactValue = document.getElementById('contact-value');
-        const button = document.getElementById('contact-submit');
-        const status = document.getElementById('contact-status');
-        const updateContactType = () => {
-            const options = {
-                email: ['邮箱地址 *', 'email', 'email', '方便回复你的邮箱'],
-                wechat: ['微信号 *', 'text', 'off', '方便联系你的微信号'],
-                phone: ['电话号码 *', 'tel', 'tel', '方便联系你的电话号码'],
-            };
-            const [label, type, autocomplete, placeholder] = options[contactType.value];
-            document.getElementById('contact-value-label').textContent = label;
-            contactValue.type = type;
-            contactValue.autocomplete = autocomplete;
-            contactValue.placeholder = placeholder;
-        };
-        contactType.addEventListener('change', updateContactType);
-        form.addEventListener('submit', async event => {
-            event.preventDefault();
-            if (button.disabled || !form.reportValidity()) return;
-            const data = Object.fromEntries(new FormData(form));
-            for (const field of ['name', 'contact', 'content']) data[field] = data[field].trim();
-            if (!data.name || !data.contact || !data.content) {
-                status.dataset.state = 'error';
-                status.textContent = '请填写所有必填字段，不能只输入空格。';
-                return;
-            }
-            button.disabled = true;
-            button.textContent = '正在提交…';
-            status.dataset.state = '';
-            status.textContent = '正在提交你的私密留言，请稍候。';
-            try {
-                const response = await fetch(`${API_BASE}/api/messages`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data),
-                });
-                const result = await response.json();
-                if (!response.ok || !result.success) throw new Error(result.error || '提交失败，请稍后重试。');
-                form.reset();
-                updateContactType();
-                status.dataset.state = 'success';
-                status.textContent = result.message;
-            } catch (error) {
-                status.dataset.state = 'error';
-                status.textContent = error instanceof TypeError || error instanceof SyntaxError
-                    ? '暂时无法提交，请检查网络后重试。你填写的内容已保留。'
-                    : error.message;
-            } finally {
-                button.disabled = false;
-                button.textContent = '发送私密留言';
-            }
-        });
-    }
-
-    // 加载项目
-    async function loadProjects() {
-        try {
-            const response = await fetch(`${API_BASE}/api/projects`);
-            const projects = await response.json();
-
-            const container = document.getElementById('projects-container');
-            if (projects.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-12 text-on-surface-variant">暂无项目数据</div>';
-                return;
-            }
-
-            // 更新项目计数
-            document.getElementById('project-count').textContent = `01 — ${String(projects.length).padStart(2, '0')} 作品`;
-
-            container.innerHTML = projects.map((project, index) => {
-                const hasUrl = project.project_url && project.project_url.trim() !== '';
-                const wrapperClass = 'group cursor-pointer';
-                const wrapperAttrs = hasUrl ? `onclick="window.open('${project.project_url}', '_blank')"` : '';
-                
-                return `
-                    <div class="${wrapperClass}" ${wrapperAttrs}>
-                        <div class="aspect-[4/5] overflow-hidden bg-surface-container-highest mb-5 relative">
-                            <img class="w-full h-full object-cover transition-all duration-700 scale-105 group-hover:scale-100"
-                                 src="${project.image_url}"
-                                 alt="${project.title}"/>
-                            <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-500"></div>
-                            ${hasUrl ? `
-                                <div class="absolute top-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
-                                    <span class="text-xs font-medium">访问项目</span>
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <span class="font-label text-xs uppercase tracking-widest text-primary">${project.category}</span>
-                            <h3 class="font-headline text-2xl font-bold group-hover:text-primary transition-colors">${project.title}</h3>
-                            <p class="font-body text-on-surface-variant max-w-sm mt-2">${project.description}</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        } catch (error) {
-            console.error('加载项目失败:', error);
-            document.getElementById('projects-container').innerHTML = '<div class="col-span-full text-center py-12 text-error">加载失败</div>';
-        }
-    }
-
-    // 加载技能
-    async function loadSkills() {
-        try {
-            const response = await fetch(`${API_BASE}/api/skills`);
-            const skills = await response.json();
-
-            const container = document.getElementById('skills-container');
-            const categories = { design: '设计', development: '开发', soft: '软技能' };
-
-            Object.keys(categories).forEach(category => {
-                const categorySkills = skills.filter(s => s.category === category);
-                const skillsHtml = categorySkills.map(s => `<span class="font-medium">${s.name}</span>`).join('');
-                container.innerHTML += `
-                    <div class="flex flex-col">
-                        <span class="text-xs uppercase tracking-widest opacity-60 mb-2">${categories[category]}</span>
-                        ${skillsHtml}
-                    </div>
-                `;
-            });
-        } catch (error) {
-            console.error('加载技能失败:', error);
-        }
-    }
-
-    // 页面加载完成后初始化
-    document.addEventListener('DOMContentLoaded', () => {
-        const navLinks = document.querySelectorAll('[data-nav-link]');
-        const sections = Array.from(navLinks)
-            .map(link => document.getElementById(link.dataset.section))
-            .filter(Boolean);
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', event => {
-                event.preventDefault();
-                setActiveNavLink(link.dataset.section);
-                scrollToSection(link.dataset.section);
-            });
-        });
-
-        if (window.location.hash) {
-            setActiveNavLink(window.location.hash.replace('#', ''));
-        }
-
-        const observer = new IntersectionObserver(entries => {
-            const currentSection = entries
-                .filter(entry => entry.isIntersecting)
-                .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-            if (currentSection) {
-                setActiveNavLink(currentSection.target.id);
-            }
-        }, {
-            rootMargin: '-30% 0px -45% 0px',
-            threshold: [0.2, 0.4, 0.6]
-        });
-
-        sections.forEach(section => observer.observe(section));
-
-        loadProjects();
-        loadSkills();
-        initContactForm();
-    });
-</script>
+<footer class="site-footer"><div class="container footer-main"><a class="brand" href="#home"><img class="brand-mark" src="{{ url_for('static', filename='brand/sike-mark.svg') }}" width="41" height="41" alt="" aria-hidden="true"><span>思刻软件开发<span class="brand-caption">让想法成为软件</span></span></a><div><a href="#services">开发服务</a><a href="#works">项目案例</a><a href="#contact">联系我</a></div></div><div class="container footer-bottom"><span>© 2026 思刻软件开发 · 用心开发，认真交付。</span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2022040643号-1</a><span class="mono">BUILT WITH PURPOSE.</span></div></footer>
 </body>
 </html>

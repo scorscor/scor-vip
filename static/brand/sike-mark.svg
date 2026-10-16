@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <title>思刻软件开发</title>
+  <rect width="64" height="64" rx="17" fill="#202B28"/>
+  <path d="M45 17H28L17 28L31 37" stroke="#D9ED8B" stroke-width="8" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M19 47H36L47 36L33 27" stroke="#F7F8F2" stroke-width="8" stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>
