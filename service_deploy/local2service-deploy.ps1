@@ -158,6 +158,7 @@ else
   fi
 fi
 
+if [ ! -f "$COMPOSE_FILE" ]; then
 cat > "$COMPOSE_FILE" <<EOF
 services:
   web:
@@ -181,6 +182,21 @@ services:
 volumes:
   scor-vip-data:
 EOF
+else
+  # Keep production mounts and commands; only update the existing web image.
+  python3 - "$COMPOSE_FILE" "$IMAGE_TAG" <<'PY'
+import re, sys
+path, image = sys.argv[1:]
+with open(path, 'r') as handle:
+    content = handle.read()
+pattern = r'(?m)^(  web:\s*\n(?:    [^\n]*\n)*?    image: )[^\n]+$'
+updated, count = re.subn(pattern, lambda m: m.group(1) + image, content, count=1)
+if count != 1:
+    raise SystemExit('Cannot locate web image; refusing to overwrite production compose')
+with open(path, 'w') as handle:
+    handle.write(updated)
+PY
+fi
 
 if [ -n "$GHCR_TOKEN" ]; then
   echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin

@@ -31,6 +31,13 @@ jobs:
       - name: Compile Python files
         run: python -m compileall app run.py init_db.py bootstrap_db.py
 
+      - name: Test contact notifications
+        run: python -m unittest discover -s tests -v
+
+      - name: Test shared mail API
+        working-directory: services/mail
+        run: python -m unittest -v
+
       - name: Smoke test Flask app factory
         env:
           SECRET_KEY: ci-secret

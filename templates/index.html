@@ -136,6 +136,22 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        .contact-layout { display: grid; gap: 3rem; width: 100%; text-align: left; }
+        .contact-form { display: grid; gap: 1.25rem; padding: 2rem; border: 1px solid #434656; border-radius: 12px; background: #242627; }
+        .contact-form label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: #e2e2e4; }
+        .contact-form input, .contact-form select, .contact-form textarea { width: 100%; padding: 0.8rem 1rem; border: 1px solid #636567; border-radius: 6px; background: #1a1c1d; color: #f9f9fb; font: inherit; }
+        .contact-form textarea { resize: vertical; min-height: 150px; }
+        .contact-form :focus-visible { outline: 2px solid #b6c4ff; outline-offset: 3px; }
+        .contact-form input::placeholder, .contact-form textarea::placeholder { color: #a6a8ab; }
+        .contact-form button { padding: 0.9rem 1.5rem; border-radius: 6px; background: #0055ff; color: white; font-weight: 700; cursor: pointer; }
+        .contact-form button:disabled { opacity: 0.6; cursor: wait; }
+        .contact-form button:hover:not(:disabled) { background: #0041c8; }
+        .contact-form-note { color: #c3c5d9; font-size: 0.875rem; line-height: 1.7; }
+        .contact-status { min-height: 1.5em; font-size: 0.875rem; }
+        .contact-status[data-state="success"] { color: #a7f3d0; }
+        .contact-status[data-state="error"] { color: #ffb4ab; }
+        @media (min-width: 900px) { .contact-layout { grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; } }
+        @media (max-width: 480px) { .contact-form { padding: 1.25rem; } }
     </style>
     <script>
         if (document.fonts) {
@@ -249,8 +265,37 @@
 
     <!-- Contact Section -->
     <section id="contact" class="py-32 px-8 md:px-16 bg-on-background text-surface scroll-mt-32">
-        <div class="max-w-screen-2xl mx-auto flex flex-col items-center text-center">
-            <h2 class="font-headline text-5xl md:text-8xl font-extrabold tracking-tighter max-w-4xl">一起创造<span class="text-primary italic">非凡</span>之作</h2>
+        <div class="max-w-screen-2xl mx-auto contact-layout">
+            <div>
+                <p class="text-sm tracking-widest mb-6 text-slate-300">联系我们</p>
+                <h2 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter max-w-4xl">一起创造<span class="text-primary italic">非凡</span>之作</h2>
+                <p class="mt-8 text-slate-300 leading-relaxed max-w-md">有项目想法、合作需求或想交流的问题？留下你的联系方式和想法，我会尽快与你联系。</p>
+                <p class="contact-form-note mt-6">留言仅供管理员查看，不会公开展示。联系方式仅用于回复本次咨询。</p>
+            </div>
+            <form id="contact-form" class="contact-form" aria-label="私密联系表单">
+                <div>
+                    <label for="contact-name">姓名或称呼 *</label>
+                    <input id="contact-name" name="name" autocomplete="name" maxlength="100" placeholder="怎么称呼你？" required>
+                </div>
+                <div>
+                    <label for="contact-type">联系方式类型 *</label>
+                    <select id="contact-type" name="contact_type">
+                        <option value="email">邮箱</option>
+                        <option value="wechat">微信</option>
+                        <option value="phone">电话</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="contact-value" id="contact-value-label">邮箱地址 *</label>
+                    <input id="contact-value" name="contact" type="email" autocomplete="email" maxlength="120" placeholder="方便回复你的邮箱" required>
+                </div>
+                <div>
+                    <label for="contact-content">留言内容 *</label>
+                    <textarea id="contact-content" name="content" rows="5" maxlength="5000" placeholder="介绍一下你的需求、想法或问题……" required></textarea>
+                </div>
+                <button id="contact-submit" type="submit">发送私密留言</button>
+                <p id="contact-status" class="contact-status" role="status" aria-live="polite"></p>
+            </form>
         </div>
     </section>
 </main>
@@ -265,7 +310,7 @@
             <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#">领英</a>
             <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#">Dribbble</a>
             <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#">Instagram</a>
-            <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#">邮箱</a>
+            <a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all underline-offset-4 hover:underline" href="#contact">联系我们</a>
         </div>
     </div>
 </footer>
@@ -311,6 +356,63 @@
     function scrollToContact() {
         setActiveNavLink('contact');
         scrollToSection('contact');
+    }
+
+    function initContactForm() {
+        const form = document.getElementById('contact-form');
+        const contactType = document.getElementById('contact-type');
+        const contactValue = document.getElementById('contact-value');
+        const button = document.getElementById('contact-submit');
+        const status = document.getElementById('contact-status');
+        const updateContactType = () => {
+            const options = {
+                email: ['邮箱地址 *', 'email', 'email', '方便回复你的邮箱'],
+                wechat: ['微信号 *', 'text', 'off', '方便联系你的微信号'],
+                phone: ['电话号码 *', 'tel', 'tel', '方便联系你的电话号码'],
+            };
+            const [label, type, autocomplete, placeholder] = options[contactType.value];
+            document.getElementById('contact-value-label').textContent = label;
+            contactValue.type = type;
+            contactValue.autocomplete = autocomplete;
+            contactValue.placeholder = placeholder;
+        };
+        contactType.addEventListener('change', updateContactType);
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+            if (button.disabled || !form.reportValidity()) return;
+            const data = Object.fromEntries(new FormData(form));
+            for (const field of ['name', 'contact', 'content']) data[field] = data[field].trim();
+            if (!data.name || !data.contact || !data.content) {
+                status.dataset.state = 'error';
+                status.textContent = '请填写所有必填字段，不能只输入空格。';
+                return;
+            }
+            button.disabled = true;
+            button.textContent = '正在提交…';
+            status.dataset.state = '';
+            status.textContent = '正在提交你的私密留言，请稍候。';
+            try {
+                const response = await fetch(`${API_BASE}/api/messages`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error(result.error || '提交失败，请稍后重试。');
+                form.reset();
+                updateContactType();
+                status.dataset.state = 'success';
+                status.textContent = result.message;
+            } catch (error) {
+                status.dataset.state = 'error';
+                status.textContent = error instanceof TypeError || error instanceof SyntaxError
+                    ? '暂时无法提交，请检查网络后重试。你填写的内容已保留。'
+                    : error.message;
+            } finally {
+                button.disabled = false;
+                button.textContent = '发送私密留言';
+            }
+        });
     }
 
     // 加载项目
@@ -421,6 +523,7 @@
 
         loadProjects();
         loadSkills();
+        initContactForm();
     });
 </script>
 </body>

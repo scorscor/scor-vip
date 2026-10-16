@@ -17,7 +17,7 @@
         <thead class="bg-gray-50">
             <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">姓名</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">邮箱</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">联系方式</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">内容</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">时间</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
@@ -28,8 +28,8 @@
             {% for message in messages %}
             <tr class="{% if not message.is_read %}bg-blue-50{% endif %}">
                 <td class="px-6 py-4 whitespace-nowrap">{{ message.name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">{{ message.email }}</td>
-                <td class="px-6 py-4 max-w-xs truncate">{{ message.content }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ {'email': '邮箱', 'phone': '电话', 'wechat': '微信'}.get(message.contact_type, '联系') }}：{{ message.contact }}</td>
+                <td class="px-6 py-4 max-w-xs whitespace-pre-wrap break-words">{{ message.content }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}
                 </td>

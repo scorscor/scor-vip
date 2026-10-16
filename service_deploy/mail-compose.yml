@@ -1,0 +1,33 @@
+services:
+  mail-api:
+    image: ${MAIL_IMAGE:?Set MAIL_IMAGE to the verified scor-vip image}
+    container_name: scor-mail
+    restart: unless-stopped
+    user: "10001:10001"
+    env_file:
+      - .env
+    command: python -m gunicorn --chdir /app/services/mail --bind 0.0.0.0:8080 --workers 2 --threads 4 --timeout 90 'app:create_app()'
+    volumes:
+      - mail-data:/app/data
+    networks:
+      - scor-internal
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 3
+      start_period: 10s
+networks:
+  scor-internal:
+    external: true
+    name: scor-vip_default
+volumes:
+  mail-data:
+    name: scor-mail-data

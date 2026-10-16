@@ -2,6 +2,9 @@ from flask import Blueprint, current_app, jsonify, request, render_template, sen
 from app.models import db, Message, Project, Skill, Admin
 from app.passwords import check_password, encode_password
 from functools import wraps
+import re
+
+from app.mail import notify_contact_message
 
 main = Blueprint('main', __name__)
 
@@ -43,26 +46,43 @@ def favicon():
 @main.route('/api/messages', methods=['POST'])
 def submit_message():
     """提交联系表单"""
-    data = request.get_json()
+    if request.content_length and request.content_length > 32768:
+        return jsonify({'error': '留言内容过长'}), 413
+    data = request.get_json(silent=True)
 
-    if not data or not data.get('name') or not data.get('contact') or not data.get('content'):
+    if not isinstance(data, dict):
+        return jsonify({'error': '请填写联系表单'}), 400
+    values = {}
+    for field, limit in [('name', 100), ('contact', 120), ('content', 5000)]:
+        value = data.get(field)
+        if not isinstance(value, str) or not value.strip():
+            return jsonify({'error': '请填写所有必填字段'}), 400
+        values[field] = value.strip()
+        if len(values[field]) > limit:
+            return jsonify({'error': '填写内容超过长度限制'}), 400
+
+    if any(char in values['contact'] for char in '\r\n'):
         return jsonify({'error': '请填写所有必填字段'}), 400
 
     contact_type = data.get('contact_type', 'email')
     if contact_type not in ['wechat', 'phone', 'email']:
         return jsonify({'error': '无效的联系方式类型'}), 400
+    if contact_type == 'email' and not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', values['contact']):
+        return jsonify({'error': '请填写有效的邮箱地址'}), 400
 
     message = Message(
-        name=data.get('name'),
+        name=values['name'],
         contact_type=contact_type,
-        contact=data.get('contact'),
-        content=data.get('content')
+        contact=values['contact'],
+        content=values['content']
     )
 
     db.session.add(message)
     db.session.commit()
 
-    return jsonify({'message': '发送成功！我会尽快回复您。', 'success': True}), 201
+    notify_contact_message(message)
+
+    return jsonify({'message': '留言已收到，我会尽快回复。内容仅供管理员查看，不会公开展示。', 'success': True}), 201
 
 
 @main.route('/api/messages', methods=['GET'])
