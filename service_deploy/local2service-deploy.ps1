@@ -245,7 +245,7 @@ Run-Step "Pull image and deploy on server" {
   if (-not [string]::IsNullOrWhiteSpace($SshIdentityFile)) {
     $sshArgs += @("-i", $SshIdentityFile)
   }
-  $sshArgs += @($SshHost, "tr -d \r | bash -s")
+  $sshArgs += @($SshHost, "tr -d '\r' | bash -s")
 
   $RemoteScript | & ssh @sshArgs
   if ($LASTEXITCODE -ne 0) {
